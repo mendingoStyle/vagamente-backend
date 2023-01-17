@@ -8,7 +8,7 @@ import { CreatePostUseCase } from './useCases/posts.create.usecase';
 import { PostsRepository } from './posts.repository';
 import { PostsService } from './posts.service';
 import { UploadModule } from 'modules/upload/upload.module';
-
+import { TagsModule } from 'modules/tags/tags.module';
 
 @Module({
     controllers: [PostsController],
@@ -17,11 +17,12 @@ import { UploadModule } from 'modules/upload/upload.module';
         GetPostUseCase,
         CreatePostUseCase,
         PostsRepository,
-        PostsService
+        PostsService,
     ],
     imports: [
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }]),
-        UploadModule
+        UploadModule,
+        TagsModule
     ],
     exports: [PostsService],
 })

@@ -1,7 +1,6 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Schema as MongooseSchema } from 'mongoose'
 
 export type PostsDocument = HydratedDocument<Posts>;
 
@@ -21,6 +20,9 @@ export class Posts {
 
     @Prop()
     updated_at: Date;
+
+    @Prop()
+    tags: string[];
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

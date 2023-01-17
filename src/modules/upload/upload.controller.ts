@@ -13,7 +13,6 @@ export class UploadController {
         @UploadedFile()
         file: Express.Multer.File,
     ) {
-        console.log(file)
         return {
             file: file?.buffer.toString(),
         };

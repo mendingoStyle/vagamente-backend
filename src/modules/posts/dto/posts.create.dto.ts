@@ -1,6 +1,9 @@
-export class createPost {
+import { IsNotEmpty } from "@nestjs/class-validator";
+
+export class CreatePost {
     _id?: string
 
+    @IsNotEmpty()
     title?: string;
 
     user_id?: number;
@@ -8,6 +11,8 @@ export class createPost {
     created_at: Date;
 
     content_resource: string
-    
+
     updated_at: Date
+
+    tags: any
 }

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PostsValidator } from "../validator/posts.validator";
 import { PostsRepository } from "../posts.repository";
+import { GetPost } from "../dto/posts.get.dto";
 
 @Injectable()
 export class GetPostUseCase {
@@ -9,8 +10,12 @@ export class GetPostUseCase {
         private repository: PostsRepository,
 
     ) { }
-    findAll() {
+    findAll(dto: GetPost) {
         this.validator.findAllValidate()
-        return this.repository.findAll()
+        return this.repository.findAll(dto)
+    }
+    findCategories() {
+        this.validator.findAllValidate()
+        return this.repository.findCategories()
     }
 }

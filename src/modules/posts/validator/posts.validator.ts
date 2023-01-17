@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { createPost } from "../dto/posts.create.dto";
+import { CreatePost } from "../dto/posts.create.dto";
 import { PostsRepository } from "../posts.repository";
 import { Posts } from "database/schemas/posts.schema";
 
@@ -8,7 +8,7 @@ import { Posts } from "database/schemas/posts.schema";
 export class PostsValidator {
     constructor(
     ) { }
-    async validateToSave(body: createPost): Promise<any> {
+    async validateToSave(body: CreatePost): Promise<any> {
        
     }
     async findAllValidate(){

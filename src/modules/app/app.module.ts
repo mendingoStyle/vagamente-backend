@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PostsModule } from 'modules/posts/posts.module';
 import { UploadModule } from 'modules/upload/upload.module';
+import { TagsModule } from 'modules/tags/tags.module';
 require('dotenv').config()
 @Module({
   imports: [
@@ -13,6 +14,7 @@ require('dotenv').config()
     }),
     PostsModule,
     UploadModule,
+    TagsModule
   ],
   controllers: [AppController],
 })

@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { GetPostUseCase } from "./useCases/posts.get.usecase";
 import { Posts } from "database/schemas/posts.schema";
 import { CreatePostUseCase } from "./useCases/posts.create.usecase";
+import { GetPost } from "./dto/posts.get.dto";
 
 @Injectable()
 export class PostsService {
@@ -9,10 +10,14 @@ export class PostsService {
         private useCaseCreatePosts: CreatePostUseCase,
         private useCaseGetPosts: GetPostUseCase
     ) { }
-    async create(body: any, file): Promise<any> {
+    async create(body: any, file: Express.Multer.File): Promise<any> {
         return this.useCaseCreatePosts.create(body, file)
     }
-    async findAll(): Promise<Posts[]> {
-        return this.useCaseGetPosts.findAll()
+    async findAll(dto: GetPost): Promise<Posts[]> {
+        return this.useCaseGetPosts.findAll(dto)
+    }
+
+    async findCategories() {
+        return this.useCaseGetPosts.findCategories()
     }
 }
