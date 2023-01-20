@@ -195,7 +195,6 @@ export class UtilsService {
         _id: { $exists: true }
       }
     }
-    console.log(obj)
     return obj
   }
 }

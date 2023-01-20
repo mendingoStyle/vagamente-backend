@@ -32,6 +32,8 @@ export class PostsRepository {
                     as: 'reacts',
                 },
             },
+
+
             {
                 $lookup: {
                     from: 'users',
@@ -100,13 +102,16 @@ export class PostsRepository {
                         ]
                     }
                 }
+            },
+            { $sort: { _id: -1 } },
+            {
+                '$facet': {
+                    data: [{ $skip: (page - 1) * limit }, { $limit: limit }] // add projection here wish you re-shape the docs
+                }
             }
         ])
-        //r =  this.utils.applyFilter(query, r)
-        return r.skip((page - 1) * limit)
-            .sort({ _id: 'desc' })
-            .limit(limit)
-            .exec()
+
+        return (await r.exec())[0]?.data
     }
 
     async findCategories() {

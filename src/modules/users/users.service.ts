@@ -11,8 +11,8 @@ export class UsersService {
         private readonly useCaseCreateUser: CreateUserUseCase,
         private readonly useCaseGetUser: GetUserUseCase
     ) { }
-    async create(body: CreateUser) {
-        return this.useCaseCreateUser.create(body)
+    async create(body: CreateUser, file: Express.Multer.File) {
+        return this.useCaseCreateUser.create(body, file)
     }
     async findAll(dto: GetUser) {
         return this.useCaseGetUser.findAll(dto)

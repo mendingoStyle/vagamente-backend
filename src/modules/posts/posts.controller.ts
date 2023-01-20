@@ -16,7 +16,6 @@ export class PostsController {
         @UploadedFile() file: Express.Multer.File,
         @Headers('authorization') token: string,
     ): Promise<any> {
-        console.log(token)
         return this.service.create(dto, file, token)
     }
 

@@ -38,7 +38,6 @@ export class CreatePostUseCase {
                 ...post, created_at: new Date(), updated_at: new Date(), content_resource: img?.url
             }
             this.validator.validateToSave(postWithTimeAndFile)
-            console.log(token)
             if (token)
                 try {
                     const user = await this.tokenController.verifyToken(token.split('Bearer ')[1])
