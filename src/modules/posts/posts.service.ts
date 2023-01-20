@@ -13,8 +13,8 @@ export class PostsService {
     async create(body: any, file: Express.Multer.File): Promise<any> {
         return this.useCaseCreatePosts.create(body, file)
     }
-    async findAll(dto: GetPost): Promise<Posts[]> {
-        return this.useCaseGetPosts.findAll(dto)
+    async findAll(dto: GetPost, token: string): Promise<Posts[]> {
+        return this.useCaseGetPosts.findAll(dto, token)
     }
 
     async findCategories() {

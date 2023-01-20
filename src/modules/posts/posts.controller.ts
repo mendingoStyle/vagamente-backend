@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Headers, Controller, Get, Post, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { CreatePost } from "./dto/posts.create.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -13,17 +13,18 @@ export class PostsController {
     @Post()
     create(
         @Body() dto: CreatePost,
-        @UploadedFile()
-        file: Express.Multer.File
+        @UploadedFile() file: Express.Multer.File,
     ): Promise<any> {
         return this.service.create(dto, file)
     }
 
     @Get()
     findAll(
-        @Query() dto: GetPost
+        @Query() dto: GetPost,
+        @Headers('authorization') token: string,
     ): Promise<any> {
-        return this.service.findAll(dto)
+        console.log(token)
+        return this.service.findAll(dto,token)
     }
 
     @Get('post-by/tags')

@@ -12,11 +12,27 @@ export class UploadService {
             api_secret: 'cFZEfErzqhnevyGvyfJr2wSzsgE',
             secure: true
         });
+  
+        let fileObjOptions: any = {
+            folder: "foo"
+        }
+        if (file.mimetype.includes('video')) {
+            fileObjOptions = {
+                ...fileObjOptions,
+                resource_type: "video",
+                chunk_size: 6000000,
+                eager: [
+                    { width: 300, height: 300, crop: "pad", audio_codec: "none" },
+                    { width: 160, height: 100, crop: "crop", gravity: "south", audio_codec: "none" }],
+                eager_async: true,
+            }
+        }
         const uploadFromBuffer = async () => {
             return new Promise(async function (resolve, reject) {
                 const cld_upload_stream = await cloudinary.uploader.upload_stream(
+
                     {
-                        folder: "foo"
+                        ...fileObjOptions
                     },
                     (error: any, result: any) => {
                         if (error) reject(null)

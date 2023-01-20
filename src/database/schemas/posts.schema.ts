@@ -1,8 +1,14 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { Users } from './users.schema';
+import * as mongoose from 'mongoose';
 
 export type PostsDocument = HydratedDocument<Posts>;
+
+export class Reactions {
+
+}
 
 @Schema()
 export class Posts {
@@ -10,7 +16,7 @@ export class Posts {
     title: string;
 
     @Prop()
-    user_id: number;
+    user_id: string;
 
     @Prop()
     created_at: Date;
@@ -23,6 +29,8 @@ export class Posts {
 
     @Prop()
     tags: string[];
+
+
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

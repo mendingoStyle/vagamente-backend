@@ -5,7 +5,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PostsModule } from 'modules/posts/posts.module';
 import { UploadModule } from 'modules/upload/upload.module';
 import { TagsModule } from 'modules/tags/tags.module';
+import { UtilsModule } from 'modules/utils/utils.module';
+import { TokenModule } from 'modules/token/tokenController.module';
+import { AuthModule } from 'modules/auth/auth.module';
+import { ReactionsModule } from 'modules/reactions/reactions.module';
 require('dotenv').config()
+
 @Module({
   imports: [
     MongooseModule.forRoot(`mongodb://${process.env.DB_USERNAME_ADMIN}:${process.env.DB_PASSWORD_ADMIN}@localhost:27017/${process.env.DATABASE}`,),
@@ -14,7 +19,11 @@ require('dotenv').config()
     }),
     PostsModule,
     UploadModule,
-    TagsModule
+    TagsModule,
+    UtilsModule,
+    TokenModule,
+    AuthModule,
+    ReactionsModule
   ],
   controllers: [AppController],
 })

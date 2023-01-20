@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { TagsValidator } from "../validator/tags.validator";
+import { TagsValidator } from "../validators/tags.validator";
 import { TagsRepository } from "../tags.repository";
 import { GetTag } from "../dto/tags.get.dto";
 
