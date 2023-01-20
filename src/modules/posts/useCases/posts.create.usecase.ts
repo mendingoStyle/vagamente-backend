@@ -5,6 +5,8 @@ import { Posts } from "database/schemas/posts.schema";
 import { PostsRepository } from "../posts.repository";
 import { UploadService } from "modules/upload/upload.service";
 import { TagsService } from "modules/tags/tags.service";
+import { TokenService } from "modules/token/tokenController.service";
+import mongoose from "mongoose";
 
 @Injectable()
 export class CreatePostUseCase {
@@ -12,9 +14,10 @@ export class CreatePostUseCase {
         private validator: PostsValidator,
         private repository: PostsRepository,
         private readonly uploadService: UploadService,
-        private readonly tagsService: TagsService
+        private readonly tagsService: TagsService,
+        private readonly tokenController: TokenService
     ) { }
-    async create(post: CreatePost, file: Express.Multer.File) {
+    async create(post: CreatePost, file: Express.Multer.File, token?: string) {
         try {
             let img = null
             if (!post.content_resource)
@@ -35,6 +38,14 @@ export class CreatePostUseCase {
                 ...post, created_at: new Date(), updated_at: new Date(), content_resource: img?.url
             }
             this.validator.validateToSave(postWithTimeAndFile)
+            console.log(token)
+            if (token)
+                try {
+                    const user = await this.tokenController.verifyToken(token.split('Bearer ')[1])
+                    if (user) postWithTimeAndFile.user_id = user.id
+                } catch (e) {
+                    console.log(e)
+                }
             return this.repository.create(postWithTimeAndFile)
         } catch (e) {
             console.log(e)

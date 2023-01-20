@@ -14,8 +14,10 @@ export class PostsController {
     create(
         @Body() dto: CreatePost,
         @UploadedFile() file: Express.Multer.File,
+        @Headers('authorization') token: string,
     ): Promise<any> {
-        return this.service.create(dto, file)
+        console.log(token)
+        return this.service.create(dto, file, token)
     }
 
     @Get()
@@ -23,8 +25,7 @@ export class PostsController {
         @Query() dto: GetPost,
         @Headers('authorization') token: string,
     ): Promise<any> {
-        console.log(token)
-        return this.service.findAll(dto,token)
+        return this.service.findAll(dto, token)
     }
 
     @Get('post-by/tags')

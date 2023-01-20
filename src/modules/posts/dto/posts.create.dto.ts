@@ -1,4 +1,5 @@
 import { IsNotEmpty } from "@nestjs/class-validator";
+import mongoose from "mongoose";
 
 export class CreatePost {
     _id?: string
@@ -6,7 +7,7 @@ export class CreatePost {
     @IsNotEmpty()
     title?: string;
 
-    user_id?: number;
+    user_id?: string
 
     created_at: Date;
 
@@ -15,4 +16,6 @@ export class CreatePost {
     updated_at: Date
 
     tags: any
+
+    isAnonymous: boolean
 }

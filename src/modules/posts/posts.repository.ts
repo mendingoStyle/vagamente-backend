@@ -30,10 +30,17 @@ export class PostsRepository {
                     localField: '_id',
                     foreignField: 'post_id',
                     as: 'reacts',
-
-
                 },
             },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user_id',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+
             {
                 $addFields: {
                     like: {
@@ -70,9 +77,30 @@ export class PostsRepository {
                     }
                 }
             },
-            { $project: { 'like': 0, 'dislike': 0 } }
+            { $project: { 'like': 0, 'dislike': 0 } },
 
-
+            {
+                "$addFields": {
+                    "user": {
+                        "$cond": [
+                            { "$eq": ["$isAnonymous", true] },
+                            "$$REMOVE",
+                            "$user"
+                        ]
+                    }
+                }
+            },
+            {
+                "$addFields": {
+                    "user.password": {
+                        "$cond": [
+                            { "$eq": [true, true] },
+                            "$$REMOVE",
+                            0
+                        ]
+                    }
+                }
+            }
         ])
         //r =  this.utils.applyFilter(query, r)
         return r.skip((page - 1) * limit)

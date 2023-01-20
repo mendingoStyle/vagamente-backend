@@ -15,8 +15,11 @@ export class Posts {
     @Prop()
     title: string;
 
-    @Prop()
-    user_id: string;
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId,
+        ref: Users.name
+    })
+    user_id: mongoose.Schema.Types.ObjectId;
 
     @Prop()
     created_at: Date;
@@ -30,6 +33,8 @@ export class Posts {
     @Prop()
     tags: string[];
 
+    @Prop()
+    isAnonymous: boolean
 
 }
 
