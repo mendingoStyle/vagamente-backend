@@ -177,7 +177,7 @@ export class UtilsService {
   applyFilterAggregate(query: any) {
     let obj = undefined
     for (const [key, value] of Object.entries(query)) {
-      if (value) {
+      if (value !== undefined) {
         obj = {
           ...obj,
           [key]: value

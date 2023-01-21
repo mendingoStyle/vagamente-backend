@@ -8,6 +8,7 @@ import { UsersRepository } from './users.repository';
 import { CreateUserUseCase } from './useCases/users.create.usecase';
 import { GetUserUseCase } from './useCases/users.get.usecase';
 import { UploadModule } from 'modules/upload/upload.module';
+import { EditUserUseCase } from './useCases/users.edit.usecase';
 
 @Module({
     controllers: [UsersController],
@@ -16,7 +17,8 @@ import { UploadModule } from 'modules/upload/upload.module';
         UsersRepository,
         UsersService,
         CreateUserUseCase,
-        GetUserUseCase
+        GetUserUseCase,
+        EditUserUseCase
     ],
     imports: [
         MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),

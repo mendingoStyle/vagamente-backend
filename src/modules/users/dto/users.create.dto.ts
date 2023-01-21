@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from "@nestjs/class-validator";
+import { IsEmail, IsNotEmpty, IsOptional } from "@nestjs/class-validator";
 
 export class CreateUser {
     name: string;
@@ -23,3 +23,29 @@ export class CreateUser {
 
     deleted_at: Date;
 }
+
+
+export class EditUser {
+    _id: string
+
+    name: string;
+
+    birth_date: Date;
+
+    @IsEmail()
+    @IsOptional()
+    email: string;
+
+    avatar: string;
+
+    username: string;
+
+    created_at: Date;
+
+    updated_at: Date;
+
+    deleted_at: Date;
+
+    password: string;
+}
+

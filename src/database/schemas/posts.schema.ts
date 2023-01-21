@@ -31,6 +31,9 @@ export class Posts {
     updated_at: Date;
 
     @Prop()
+    deleted_at: Date;
+
+    @Prop()
     tags: string[];
 
     @Prop()

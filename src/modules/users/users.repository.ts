@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Users, UsersDocument } from "database/schemas/users.schema";
 import { Model } from "mongoose";
-import { CreateUser } from "./dto/users.create.dto";
+import { CreateUser, EditUser } from "./dto/users.create.dto";
 import { UtilsService } from "modules/utils/utils.service";
 
 
@@ -12,9 +12,12 @@ export class UsersRepository {
         @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
         private readonly utils: UtilsService
     ) { }
-    create(body: CreateUser) {
+    async create(body: CreateUser) {
         const userModel = new this.usersModel(body);
-        return userModel.save();
+        await userModel.save();
+        return {
+            message: 'ok'
+        }
     }
     async findAll(dto: any) {
         const { limit, page, ...query } = dto
@@ -35,6 +38,28 @@ export class UsersRepository {
                 ]
             })
             .exec()
+    }
+    async findOneByEmailOrUsernameBoolean(dto: { email: string, username: string }) {
+        const user = await this.usersModel.findOne()
+            .where({
+                "$or": [
+                    { username: dto.username },
+                    { email: dto.email }
+                ]
+            })
+            .exec()
+        return {
+            exist: !!user
+        }
+    }
+    async patch(body: EditUser) {
+        await this.usersModel.findOneAndUpdate(
+            { _id: body._id },
+            { ...body, updated_at: new Date() },
+            { upsert: true, new: false });
+        return {
+            message: 'ok'
+        }
     }
 
 

@@ -14,5 +14,10 @@ export class GetUserUseCase {
         this.validator.findAllValidate(dto)
         return this.repository.findAll(dto)
     }
-
+    verifyEmailUsername(dto): Promise<{
+        exist: boolean;
+    }> {
+        this.validator.findAllValidateVerifyUsernameEmail(dto)
+        return this.repository.findOneByEmailOrUsernameBoolean(dto)
+    }
 }
