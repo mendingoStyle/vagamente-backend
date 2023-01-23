@@ -14,7 +14,7 @@ require('dotenv').config()
 
 @Module({
   imports: [
-    MongooseModule.forRoot(`mongodb://${process.env.DB_USERNAME_ADMIN}:${process.env.DB_PASSWORD_ADMIN}@localhost:27017/${process.env.DATABASE}`,),
+    MongooseModule.forRoot(`mongodb://${process.env.DB_USERNAME_ADMIN}:${process.env.DB_PASSWORD_ADMIN}@${process.env.DATABASE_IP}:27017/${process.env.DATABASE}`,),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
