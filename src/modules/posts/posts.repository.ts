@@ -6,6 +6,7 @@ import { CreatePost } from "./dto/posts.create.dto";
 import { GetPost } from "./dto/posts.get.dto";
 import { UtilsService } from "modules/utils/utils.service";
 import { pipeline } from "stream";
+import { EditPost } from "./dto/posts.edit.dto";
 
 @Injectable()
 export class PostsRepository {
@@ -102,7 +103,12 @@ export class PostsRepository {
                 "$addFields": {
                     "user": {
                         "$cond": [
-                            { "$eq": ["$isAnonymous", true] },
+                            {
+                                $or: [
+                                    { "$eq": ["$isAnonymous", true] },
+                                    { "$eq": ["$user_id", new mongoose.Types.ObjectId(userId)] }
+                                ]
+                            },
                             "$$REMOVE",
                             "$user"
                         ]
@@ -258,5 +264,14 @@ export class PostsRepository {
         ])
 
         return r[0].tags_details
+    }
+    async edit(dto: EditPost) {
+        await this.postsModel.findOneAndUpdate(
+            { _id: dto._id, user_id: dto.user_id },
+            { ...dto, updated_at: new Date() },
+            { upsert: true, new: false });
+        return {
+            message: 'ok'
+        }
     }
 }

@@ -3,6 +3,7 @@ import { CreatePost } from "../dto/posts.create.dto";
 import { PostsRepository } from "../posts.repository";
 import { Posts } from "database/schemas/posts.schema";
 import { GetPost } from "../dto/posts.get.dto";
+import { EditPost } from "../dto/posts.edit.dto";
 
 
 @Injectable()
@@ -13,6 +14,9 @@ export class PostsValidator {
 
     }
     async findAllValidate(dto: GetPost, token: string) {
+    }
+    async edit(dto: EditPost) {
+        
     }
 
 }

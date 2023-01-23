@@ -60,7 +60,7 @@ export class UsersController {
         return await this.service.sendEmail(user)
     }
 
-    @Post()
+    @Post('recovery-password')
     async recoveryPassword(
         @Headers('authorization') token: string,
         @Body(new ValidationPipe()) user: UserChangePasswordDTO): Promise<{ message: string }> {

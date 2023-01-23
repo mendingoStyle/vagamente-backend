@@ -10,6 +10,7 @@ import { PostsService } from './posts.service';
 import { UploadModule } from 'modules/upload/upload.module';
 import { TagsModule } from 'modules/tags/tags.module';
 import { TokenModule } from 'modules/token/tokenController.module';
+import { EditPostUseCase } from './useCases/posts.edit.usecase';
 
 @Module({
     controllers: [PostsController],
@@ -19,6 +20,7 @@ import { TokenModule } from 'modules/token/tokenController.module';
         CreatePostUseCase,
         PostsRepository,
         PostsService,
+        EditPostUseCase
     ],
     imports: [
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }]),

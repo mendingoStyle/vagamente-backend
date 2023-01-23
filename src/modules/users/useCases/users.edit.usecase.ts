@@ -84,7 +84,7 @@ export class EditUserUseCase {
         if (!auth.changePassword) {
             throw this.utils.throwForbiddenException('Não autorizado')
         }
-        if (auth.id > 0) {
+        if (auth.id) {
             const userEdit = {
                 _id: auth.id,
                 password: await bcrypt.hash(user.password, 12)
@@ -104,7 +104,8 @@ export class EditUserUseCase {
         if (!auth.changePassword) {
             throw this.utils.throwForbiddenException('Não autorizado')
         }
-        if (auth.id > 0) {
+      
+        if (auth.id) {
 
             const update = await this.repository.patch({ _id: auth.id, password: await bcrypt.hash(user.password, 12) })
             if (update.message === 'ok') return { message: "Senha atualizada com sucesso" }
