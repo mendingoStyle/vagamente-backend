@@ -2,6 +2,7 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
+    "assets": ["src/**/*.html"],
     "watchAssets": true,
     "deleteOutDir": true,
     "exclude": ["db", "node_modules", "logs", "tmp"],

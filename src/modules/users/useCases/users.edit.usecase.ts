@@ -62,7 +62,7 @@ export class EditUserUseCase {
                 this.config.get('FRONT_URL') +
                 'recuperar-senha?token=' +
                 accessToken.accessToken,
-            subject: 'Recovery Password Vagamente SYSTEM',
+            subject: 'Recuperação de senha - Vagamente',
             messageAccept: 'Email de recuperação enviado com sucesso',
             email: userExists.email
         }

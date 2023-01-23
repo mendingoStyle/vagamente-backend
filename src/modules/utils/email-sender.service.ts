@@ -3,6 +3,9 @@ import { ConfigService } from "@nestjs/config";
 import { EmailSenderDto } from "./dto/emailSender.dto";
 import { UtilsService } from "./utils.service";
 import { createTransport } from 'nodemailer'
+import Mustache from 'mustache'
+import fs from 'fs'
+import path from 'path'
 
 @Injectable()
 export class EmailSenderSevice {
@@ -24,11 +27,16 @@ export class EmailSenderSevice {
       },
     });
 
+    const filePath = path.resolve(__dirname, 'templates', 'forget-password.html')
+    console.log(filePath)
+    const templateFile = fs.readFileSync(filePath, 'utf8');
+    const rendered = Mustache.render(templateFile, { url });
+
     const mailOptions = {
       from: this.config.get('EMAIL'),
       to: senderDto.email,
       subject: senderDto.subject,
-      html: '<a href="' + url + '">' + url + '</a>'
+      html: rendered
     };
 
     const promise = new Promise(async (resolve, reject) => {
