@@ -4,6 +4,7 @@ import { Users, UsersDocument } from "database/schemas/users.schema";
 import { Model } from "mongoose";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
 import { UtilsService } from "modules/utils/utils.service";
+import { IUserValidateExists } from "modules/utils/dto/user.interface";
 
 
 @Injectable()
@@ -29,7 +30,7 @@ export class UsersRepository {
             .limit(dto.limit)
             .exec()
     }
-    async findOneByEmailOrUsername(dto: { email: string, username: string }) {
+    async findOneByEmailOrUsername(dto: { email?: string, username: string }) {
         return this.usersModel.findOne()
             .where({
                 "$or": [
@@ -59,6 +60,19 @@ export class UsersRepository {
             { upsert: true, new: false });
         return {
             message: 'ok'
+        }
+    }
+
+    async validateIfNotExists(
+        validateObjects: IUserValidateExists[],
+    ): Promise<Users> {
+        for (const validate of validateObjects) {
+            const { key, value, errorMessage } = validate
+            const user = (await this.findAll({
+                [key]: value,
+            }))[0]
+            if (!user) throw this.utils.throwErrorBadReqException(errorMessage)
+            return user
         }
     }
 

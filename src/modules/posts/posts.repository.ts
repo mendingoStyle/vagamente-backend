@@ -17,13 +17,8 @@ export class PostsRepository {
         const postModel = new this.postsModel(post);
         return postModel.save();
     }
-    async findAll(dto: GetPost, userId: string): Promise<Posts[]> {
-        const { page, limit, ...query } = dto
-        let r: any = null
-        let params = this.utils.applyFilterAggregate(query)
-
-        r = this.postsModel.aggregate([
-            params,
+    defaultGet(userId: string) {
+        return [
             {
                 $lookup: {
                     from: 'reactions',
@@ -32,8 +27,6 @@ export class PostsRepository {
                     as: 'reacts',
                 },
             },
-
-
             {
                 $lookup: {
                     from: 'users',
@@ -42,13 +35,25 @@ export class PostsRepository {
                     as: 'user',
                 },
             },
-
+            {
+                $lookup: {
+                    from: 'commentaries',
+                    localField: '_id',
+                    foreignField: 'post_id',
+                    as: 'commentaries',
+                },
+            },
             {
                 $addFields: {
                     like: {
                         $filter: {
                             input: "$reacts",
-                            cond: { $eq: ["$$this.type", 'like'] }
+                            cond: {
+                                $and: [
+                                    { $eq: ["$$this.type", 'like'] },
+                                    { $eq: ["$$this.deleted_at", null] }
+                                ]
+                            }
                         }
                     }
                 }
@@ -61,7 +66,12 @@ export class PostsRepository {
                     dislike: {
                         $filter: {
                             input: "$reacts",
-                            cond: { $eq: ["$$this.type", 'dislike'] }
+                            cond: {
+                                $and: [
+                                    { $eq: ["$$this.type", 'dislike'] },
+                                    { $eq: ["$$this.deleted_at", null] }
+                                ]
+                            }
                         }
                     }
                 }
@@ -70,17 +80,24 @@ export class PostsRepository {
                 $addFields: { dislike_count: { $size: "$dislike" } }
             },
             {
+                $addFields: { comentary_count: { $size: "$commentaries" } }
+            },
+            {
                 $addFields: {
                     reacts: {
                         $filter: {
                             input: "$reacts",
-                            cond: { $eq: ["$$this.user_id", new mongoose.Types.ObjectId(userId)] }
+                            cond: {
+                                $and: [
+                                    { $eq: ["$$this.user_id", new mongoose.Types.ObjectId(userId)] },
+                                    { $eq: ["$$this.deleted_at", null] },
+                                ]
+
+                            }
                         }
                     }
                 }
             },
-            { $project: { 'like': 0, 'dislike': 0 } },
-
             {
                 "$addFields": {
                     "user": {
@@ -103,7 +120,115 @@ export class PostsRepository {
                     }
                 }
             },
+        ]
+    }
+    async findAll(dto: GetPost, userId: string): Promise<Posts[]> {
+        const { page, limit, ...query } = dto
+        let r: any = null
+        let params = this.utils.applyFilterAggregate(query)
+        r = this.postsModel.aggregate([
+            params,
+            ...this.defaultGet(userId),
+            { $project: { 'like': 0, 'dislike': 0, 'commentaries': 0 } },
+
             { $sort: { _id: -1 } },
+            {
+                '$facet': {
+                    data: [{ $skip: (page - 1) * limit }, { $limit: limit }] // add projection here wish you re-shape the docs
+                }
+            }
+        ])
+
+        return (await r.exec())[0]?.data
+    }
+
+    async findHot(dto: GetPost, userId: string): Promise<Posts[]> {
+        const { page, limit, ...query } = dto
+        let r: any = null
+        let params = this.utils.applyFilterAggregate(query)
+
+        r = this.postsModel.aggregate([
+            params,
+            ...this.defaultGet(userId),
+            { $project: { 'like': 0, 'dislike': 0, 'commentaries': 0 } },
+
+            {
+                "$addFields": {
+                    "likes_commentaries": {
+                        $sum: ["$comentary_count", "$likes_count"]
+                    }
+                }
+            },
+            { $sort: { likes_commentaries: -1, _id: -1 } },
+            {
+                '$facet': {
+                    data: [{ $skip: (page - 1) * limit }, { $limit: limit }] // add projection here wish you re-shape the docs
+                }
+            }
+        ])
+
+        return (await r.exec())[0]?.data
+    }
+
+    async findTrending(dto: GetPost, userId: string): Promise<Posts[]> {
+        const { page, limit, ...query } = dto
+        let r: any = null
+        let params = this.utils.applyFilterAggregate(query)
+
+        r = this.postsModel.aggregate([
+            params,
+            ...this.defaultGet(userId),
+            {
+                $addFields: {
+                    likes_2h: {
+                        $filter: {
+                            input: "$like",
+                            cond: {
+                                $and: [
+                                    {
+                                        $gte: ["$like.created_at", new Date().setHours(new Date().getHours() - 2)]
+                                    },
+
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    commentaries_2h: {
+                        $filter: {
+                            input: "$commentaries",
+                            cond: {
+                                $and: [
+                                    {
+                                        $gte: ["$commentaries.created_at", new Date().setHours(new Date().getHours() - 2)]
+                                    },
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: { comentary_2h_count: { $size: "$commentaries_2h" } }
+            },
+            {
+                $addFields: { likes_2h: { $size: "$likes_2h" } }
+            },
+
+            { $project: { 'commentaries_2h': 0 } },
+
+            {
+                "$addFields": {
+                    "likes_commentaries": {
+                        $sum: ["$comentary_2h_count", "$likes_2h"]
+                    }
+                }
+            },
+            { $project: { 'like': 0, 'dislike': 0, 'commentaries': 0 } },
+            { $sort: { likes_commentaries: -1, _id: -1 } },
             {
                 '$facet': {
                     data: [{ $skip: (page - 1) * limit }, { $limit: limit }] // add projection here wish you re-shape the docs

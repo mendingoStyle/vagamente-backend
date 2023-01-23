@@ -5,6 +5,8 @@ import { CreateUserUseCase } from "./useCases/users.create.usecase";
 import { GetUserUseCase } from "./useCases/users.get.usecase";
 import { Users } from "database/schemas/users.schema";
 import { EditUserUseCase } from "./useCases/users.edit.usecase";
+import { ForgetPasswordPayloadDto } from "modules/token/dto/forgetPassword.dto";
+import { UserChangePasswordDTO } from "./dto/recovery-password.dto";
 
 @Injectable()
 export class UsersService {
@@ -33,9 +35,16 @@ export class UsersService {
         }
         return null
     }
-    async verifyEmailUsername(dto){
+    async verifyEmailUsername(dto) {
         return this.useCaseGetUser.verifyEmailUsername(dto)
     }
 
+    async sendEmail(user: ForgetPasswordPayloadDto) {
+        return this.useCaseEditUser.sendEmail(user)
+    }
+
+    async recoveryPassword(dto: UserChangePasswordDTO, token: string) {
+        return this.useCaseEditUser.recoveryPassword(dto, token)
+    }
 
 }

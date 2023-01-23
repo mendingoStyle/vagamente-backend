@@ -27,6 +27,22 @@ export class PostsController {
         return this.service.findAll(dto, token)
     }
 
+    @Get('hot')
+    findHot(
+        @Query() dto: GetPost,
+        @Headers('authorization') token: string,
+    ): Promise<any> {
+        return this.service.findHot(dto, token)
+    }
+    
+    @Get('trending')
+    findTrending(
+        @Query() dto: GetPost,
+        @Headers('authorization') token: string,
+    ): Promise<any> {
+        return this.service.findTrending(dto, token)
+    }
+
     @Get('post-by/tags')
     findCategories(
         @Query() dto: GetPost

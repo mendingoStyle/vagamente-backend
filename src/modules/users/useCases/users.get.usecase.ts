@@ -20,4 +20,5 @@ export class GetUserUseCase {
         this.validator.findAllValidateVerifyUsernameEmail(dto)
         return this.repository.findOneByEmailOrUsernameBoolean(dto)
     }
+
 }

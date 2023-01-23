@@ -16,6 +16,12 @@ export class PostsService {
     async findAll(dto: GetPost, token: string): Promise<Posts[]> {
         return this.useCaseGetPosts.findAll(dto, token)
     }
+    async findHot(dto: GetPost, token: string): Promise<Posts[]> {
+        return this.useCaseGetPosts.findHot(dto, token)
+    }
+    async findTrending(dto: GetPost, token: string): Promise<Posts[]> {
+        return this.useCaseGetPosts.findTrending(dto, token)
+    }
 
     async findCategories() {
         return this.useCaseGetPosts.findCategories()

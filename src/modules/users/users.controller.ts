@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, Query, UploadedFile, Headers, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
 import { GetUser } from "./dto/users.get.dto";
@@ -7,6 +7,8 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { LoggedUser } from "modules/utils/decorators/user.decorator";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 import { JwtAuthGuard } from "modules/auth/jwt-auth.guard";
+import { ForgetPasswordPayloadDto } from "modules/token/dto/forgetPassword.dto";
+import { UserChangePasswordDTO } from "./dto/recovery-password.dto";
 
 
 @Controller('users')
@@ -50,6 +52,19 @@ export class UsersController {
         exist: boolean;
     }> {
         return this.service.verifyEmailUsername(dto)
+    }
+
+    @Post('forget-password')
+    async sendRecoveryUrlToEmail(
+        @Body(new ValidationPipe()) user: ForgetPasswordPayloadDto): Promise<{}> {
+        return await this.service.sendEmail(user)
+    }
+
+    @Post()
+    async recoveryPassword(
+        @Headers('authorization') token: string,
+        @Body(new ValidationPipe()) user: UserChangePasswordDTO): Promise<{ message: string }> {
+        return await this.service.recoveryPassword(user, token)
     }
 
 }

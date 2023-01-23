@@ -55,6 +55,8 @@ export class AuthService {
         ...accessTokens,
         name: userExists.name,
         id: userExists._id,
+        avatar: userExists.avatar,
+        username: userExists.username,
       }
     }
 

@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config'
 import { TokenExpiredError } from 'jsonwebtoken'
 import { Users } from 'database/schemas/users.schema'
 import { GetUser } from 'modules/users/dto/users.get.dto'
+import { ForgetPasswordPayloadDto } from './dto/forgetPassword.dto'
 
 
 @Injectable()
@@ -78,6 +79,24 @@ export class TokenService {
   }
 
 
+  async createTokenChangePassword(user: ForgetPasswordPayloadDto) {
+    const accessToken = {
+      accessToken: this.jwtService.sign(
+        {
+          email: user.email,
+          sub: user.id,
+          id: user.id,
+          changePassword: true,
+          confirmPassword: false
+        },
+        {
+          secret: this.config.get('SECRET_KEY_FORGETPASSWORD'),
+          expiresIn: this.config.get('TOKEN_EXPIRE_TIME_FORGETPASSWORD'),
+        }
+      ),
+    }
+    return accessToken
+  }
 
 
   async createTokenConfirmEmail(user: GetUser) {

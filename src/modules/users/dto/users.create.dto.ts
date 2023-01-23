@@ -28,24 +28,22 @@ export class CreateUser {
 export class EditUser {
     _id: string
 
-    name: string;
+    name?: string;
 
-    birth_date: Date;
+    birth_date?: Date;
 
-    @IsEmail()
-    @IsOptional()
-    email: string;
+    oldPassword?: string
 
-    avatar: string;
+    avatar?: string;
 
-    username: string;
+    username?: string;
 
-    created_at: Date;
+    created_at?: Date;
 
-    updated_at: Date;
+    updated_at?: Date;
 
-    deleted_at: Date;
+    deleted_at?: Date;
 
-    password: string;
+    password?: string;
 }
 

@@ -9,6 +9,7 @@ import { CreateUserUseCase } from './useCases/users.create.usecase';
 import { GetUserUseCase } from './useCases/users.get.usecase';
 import { UploadModule } from 'modules/upload/upload.module';
 import { EditUserUseCase } from './useCases/users.edit.usecase';
+import { TokenModule } from 'modules/token/tokenController.module';
 
 @Module({
     controllers: [UsersController],
@@ -18,11 +19,12 @@ import { EditUserUseCase } from './useCases/users.edit.usecase';
         UsersService,
         CreateUserUseCase,
         GetUserUseCase,
-        EditUserUseCase
+        EditUserUseCase,
     ],
     imports: [
         MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
-        UploadModule
+        UploadModule,
+        TokenModule
     ],
     exports: [UsersService],
 })

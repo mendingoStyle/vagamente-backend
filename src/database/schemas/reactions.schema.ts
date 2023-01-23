@@ -36,6 +36,7 @@ export class Reactions {
 
     @Prop()
     deleted_at: Date;
+
 }
 
 export const ReactionsSchema = SchemaFactory.createForClass(Reactions);
