@@ -29,7 +29,7 @@ export class EmailSenderSevice {
 
     const filePath = path.resolve(__dirname, 'templates', 'forget-password.html')
     console.log(filePath)
-    const templateFile = fs.readFileSync(filePath, 'utf8');
+    const templateFile = fs.readFileSync('src\\modules\\utils\\templates\\forget-password.html', 'utf8');
     const rendered = Mustache.render(templateFile, { url });
 
     const mailOptions = {
