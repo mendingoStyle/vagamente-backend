@@ -5,8 +5,6 @@ import { UtilsService } from "./utils.service";
 import { createTransport } from 'nodemailer'
 import Mustache from 'mustache'
 import fs from 'fs'
-import path from 'path'
-
 @Injectable()
 export class EmailSenderSevice {
   constructor(
@@ -27,10 +25,8 @@ export class EmailSenderSevice {
       },
     });
 
-    const filePath = path.resolve(__dirname, 'templates', 'forget-password.html')
-    console.log(filePath)
     const templateFile = fs.readFileSync('src\\modules\\utils\\templates\\forget-password.html', 'utf8');
-    const rendered = Mustache.render(templateFile, { url });
+    const rendered = Mustache.render(templateFile, { url: url, vagamenteUrl: this.config.get('FRONT_URL') });
 
     const mailOptions = {
       from: this.config.get('EMAIL'),
