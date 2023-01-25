@@ -26,11 +26,15 @@ export class CreateUser {
 
 
 export class EditUser {
-    _id: string
+    _id?: string
 
     name?: string;
 
     birth_date?: Date;
+
+    password?: string;
+
+    email?: string;
 
     oldPassword?: string
 
@@ -43,7 +47,5 @@ export class EditUser {
     updated_at?: Date;
 
     deleted_at?: Date;
-
-    password?: string;
 }
 

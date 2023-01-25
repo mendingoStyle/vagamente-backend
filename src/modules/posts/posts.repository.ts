@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Posts, PostsDocument, Reactions } from "database/schemas/posts.schema";
+import { Posts, PostsDocument } from "database/schemas/posts.schema";
 import mongoose, { Model } from "mongoose";
 import { CreatePost } from "./dto/posts.create.dto";
 import { GetPost } from "./dto/posts.get.dto";
 import { UtilsService } from "modules/utils/utils.service";
-import { pipeline } from "stream";
 import { EditPost } from "./dto/posts.edit.dto";
 
 @Injectable()
@@ -104,9 +103,13 @@ export class PostsRepository {
                     "user": {
                         "$cond": [
                             {
-                                $or: [
-                                    { "$eq": ["$isAnonymous", true] },
-                                    { "$eq": ["$user_id", new mongoose.Types.ObjectId(userId)] }
+                                "$and": [
+                                    {
+                                        $or: [
+                                            { "$eq": ["$isAnonymous", true] },
+                                        ]
+                                    },
+                                    { "$ne": ["$user_id", new mongoose.Types.ObjectId(userId)] }
                                 ]
                             },
                             "$$REMOVE",

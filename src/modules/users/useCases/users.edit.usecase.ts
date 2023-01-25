@@ -26,34 +26,38 @@ export class EditUserUseCase {
         private readonly sendEmailService: EmailSenderSevice
     ) { }
     async patch(body: EditUser, file: Express.Multer.File, userId: string) {
-        try {
-            await this.validator.validateToEdit(body)
-            if (!body.avatar && file)
-                body.avatar = (await this.uploadService.create(file))?.url
-            body._id = userId
-            if (body.password) {
-                const user = (await this.repository.findAll({ _id: body._id }))[0]
-                if (!user || !body.oldPassword || !(await bcrypt.compare(body?.oldPassword, user?.password)))
-                    throw this.utils.throwNotFoundException(
-                        this.utils.errorMessages.invalidCredentials
-                    )
-                body.password = await bcrypt.hash(body.password, 12)
-                delete body['oldPassword'];
+        this.validator.validateToEdit(body)
+        if (body.username) {
+            const verify = await this.repository.findOneByEmailOrUsername({ username: body.username }, userId)
+            if (verify) {
+                if (verify.username === body.username) {
+                    throw this.utils.throwErrorBadReqException('username já cadastrado')
+                }
             }
-            return this.repository.patch(body)
-        } catch (e) {
-            if (e.message)
-                throw this.utils.throwErrorBadReqException(e.message)
-            else
-                throw this.utils.throwErrorBadReqException(e)
         }
+
+        if (!body.avatar && file) {
+            body.avatar = (await this.uploadService.create(file))?.url
+        }
+        body._id = userId
+        if (body.password) {
+            const user = (await this.repository.findAll({ _id: body._id }))[0]
+            if (!user || !body.oldPassword || !(await bcrypt.compare(body?.oldPassword, user?.password)))
+                throw this.utils.throwNotFoundException(
+                    this.utils.errorMessages.invalidCredentials
+                )
+            body.password = await bcrypt.hash(body.password, 12)
+            delete body['oldPassword'];
+        }
+        return this.repository.patch(body)
+
     }
     async sendEmail(user: ForgetPasswordPayloadDto) {
         this.validator.sendEmailValidator(user)
         let userExists = null
         if (user.email) {
             userExists = await this.repository.validateIfNotExists([{
-                key: 'email', value: user.email, errorMessage: 'Usuário não encontrado'
+                key: 'email', value: user.email, errorMessage: 'Não foi possível enviar email'
             }])
         }
         const accessToken = await this.auth.createTokenChangePassword(userExists)
@@ -104,7 +108,7 @@ export class EditUserUseCase {
         if (!auth.changePassword) {
             throw this.utils.throwForbiddenException('Não autorizado')
         }
-      
+
         if (auth.id) {
 
             const update = await this.repository.patch({ _id: auth.id, password: await bcrypt.hash(user.password, 12) })

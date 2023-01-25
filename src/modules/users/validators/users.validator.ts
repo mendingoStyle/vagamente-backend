@@ -16,7 +16,7 @@ export class UsersValidator {
         private readonly utils: UtilsService
     ) { }
     async validateToSave(dto: CreateUser) {
-        const verify = await this.repository.findOneByEmailOrUsername({ email: dto.email, username: dto.username })
+        const verify = await this.repository.findOneByEmailOrUsername({ email: dto.email, username: dto.username }, null)
         if (verify) {
             if (verify.email === dto.email) {
                 throw this.utils.throwErrorBadReqException('email já cadastrado')
@@ -27,14 +27,7 @@ export class UsersValidator {
 
 
     }
-    async validateToEdit(dto: CreateUser | EditUser) {
-        const verify = await this.repository.findOneByEmailOrUsername({ username: dto.username })
-        if (verify) {
-            if (verify.username === dto.username) {
-                throw this.utils.throwErrorBadReqException('username já cadastrado')
-            }
-        }
-
+    async validateToEdit(dto: EditUser) {
 
     }
     async findAllValidate(dto: GetUser) {

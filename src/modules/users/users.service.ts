@@ -29,14 +29,17 @@ export class UsersService {
 
     }
     async getCredentialsLogin(dto: { email: string }): Promise<Users> {
-        const result = await this.findAll({ ...dto })
+        const result = await this.useCaseGetUser.findAllWithPassword({ ...dto })
         if (result.length > 0) {
             return result[0]
         }
         return null
     }
-    async verifyEmailUsername(dto) {
-        return this.useCaseGetUser.verifyEmailUsername(dto)
+    async verifyEmailUsername(dto: {
+        email: string,
+        username: string
+    }, token: string) {
+        return this.useCaseGetUser.verifyEmailUsername(dto, token)
     }
 
     async sendEmail(user: ForgetPasswordPayloadDto) {

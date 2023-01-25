@@ -25,7 +25,8 @@ export class PostsController {
                 maxSize: 100000
             })
             .build({
-                errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+                errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+                fileIsRequired: false
             })) file: Express.Multer.File,
         @Headers('authorization') token: string,
     ): Promise<any> {

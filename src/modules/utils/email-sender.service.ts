@@ -28,7 +28,6 @@ export class EmailSenderSevice {
     });
 
     const filePath = path.resolve(__dirname, 'templates', 'forget-password.html')
-    console.log(filePath)
     const templateFile = fs.readFileSync('src\\modules\\utils\\templates\\forget-password.html', 'utf8');
     const rendered = Mustache.render(templateFile, { url });
 
@@ -36,7 +35,8 @@ export class EmailSenderSevice {
       from: this.config.get('EMAIL'),
       to: senderDto.email,
       subject: senderDto.subject,
-      html: rendered
+      html: rendered,
+      
     };
 
     const promise = new Promise(async (resolve, reject) => {

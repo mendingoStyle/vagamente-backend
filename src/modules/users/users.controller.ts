@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Query, UploadedFile, Headers, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, Query, UploadedFile, Headers, UseGuards, UseInterceptors, UsePipes, ValidationPipe, ParseFilePipeBuilder, HttpStatus } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
 import { GetUser } from "./dto/users.get.dto";
@@ -12,12 +12,12 @@ import { UserChangePasswordDTO } from "./dto/recovery-password.dto";
 
 
 @Controller('users')
-@UsePipes(new ValidationPipe({ transform: true }))
 export class UsersController {
     constructor(
         private readonly service: UsersService
     ) { }
 
+    @UsePipes(new ValidationPipe({ transform: true }))
     @Post()
     create(
         @Body() dto: CreateUser,
@@ -29,37 +29,54 @@ export class UsersController {
     @UseInterceptors(FileInterceptor('file'))
     @Patch()
     patch(
-        @UploadedFile() file: Express.Multer.File,
+        @UploadedFile(new ParseFilePipeBuilder()
+            .addFileTypeValidator({
+                fileType: '^.*\.(jpg|JPG|gif|png|mp4|jpeg|JPEG|webp)$',
+            })
+            .addMaxSizeValidator({
+                maxSize: 100000
+            })
+            .build({
+                errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+                fileIsRequired: false
+            })) file: Express.Multer.File,
         @Body() dto: EditUser,
         @LoggedUser() user: IAccessToken,
     ) {
         return this.service.patch(dto, file, user.id)
     }
 
+    @UsePipes(new ValidationPipe({ transform: true }))
+    @Get('me')
+    @UseGuards(JwtAuthGuard)
     findOne(
-        @Query() dto: GetUser
-    ): Promise<Users[]> {
-        return this.service.findAll(dto)
+        @LoggedUser() user: IAccessToken,
+    ): Promise<any> {
+        return this.service.findAll({ _id: user.id })
     }
 
+    @UsePipes(new ValidationPipe({ transform: true }))
     @Get('verify-email-username')
     verifyEmailUsername(
         @Query() dto: {
             email: string,
             username: string
-        }
+        },
+        @Headers('authorization') token: string,
     ): Promise<{
         exist: boolean;
     }> {
-        return this.service.verifyEmailUsername(dto)
+        return this.service.verifyEmailUsername(dto, token)
     }
 
+    @UsePipes(new ValidationPipe({ transform: true }))
     @Post('forget-password')
     async sendRecoveryUrlToEmail(
         @Body(new ValidationPipe()) user: ForgetPasswordPayloadDto): Promise<{}> {
         return await this.service.sendEmail(user)
     }
 
+    @UsePipes(new ValidationPipe({ transform: true }))
     @Post('recovery-password')
     async recoveryPassword(
         @Headers('authorization') token: string,

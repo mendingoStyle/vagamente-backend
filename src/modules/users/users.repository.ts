@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Users, UsersDocument } from "database/schemas/users.schema";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
 import { UtilsService } from "modules/utils/utils.service";
 import { IUserValidateExists } from "modules/utils/dto/user.interface";
@@ -30,23 +30,28 @@ export class UsersRepository {
             .limit(dto.limit)
             .exec()
     }
-    async findOneByEmailOrUsername(dto: { email?: string, username: string }) {
+    async findOneByEmailOrUsername(dto: { email?: string, username: string }, userId: string) {
         return this.usersModel.findOne()
             .where({
                 "$or": [
                     { username: dto.username },
                     { email: dto.email }
-                ]
+                ],
+                _id: { "$ne": new mongoose.Types.ObjectId(userId) }
+
             })
             .exec()
     }
-    async findOneByEmailOrUsernameBoolean(dto: { email: string, username: string }) {
+    async findOneByEmailOrUsernameBoolean(dto: { email: string, username: string }, userId: string) {
         const user = await this.usersModel.findOne()
             .where({
                 "$or": [
                     { username: dto.username },
-                    { email: dto.email }
-                ]
+                    { email: dto.email },
+
+                ],
+                _id: { "$ne": new mongoose.Types.ObjectId(userId) }
+
             })
             .exec()
         return {
@@ -59,7 +64,7 @@ export class UsersRepository {
             { ...body, updated_at: new Date() },
             { upsert: true, new: false });
         return {
-            message: 'ok'
+            message: 'Usuário Alterado!'
         }
     }
 
