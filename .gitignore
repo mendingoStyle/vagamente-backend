@@ -1,3 +1,5 @@
 node_modules
 .env
 dist
+cert2.pem
+key2.pem
