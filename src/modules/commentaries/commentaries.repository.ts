@@ -26,11 +26,22 @@ export class CommentariesRepository {
             params,
             {
                 $lookup: {
-                    from: 'commentaries',
-                    localField: '_id',
-                    foreignField: 'answer_id',
-                    as: 'answer',
+                    from: 'users',
+                    localField: 'user_id',
+                    foreignField: '_id',
+                    as: 'user',
                 },
+            },
+            {
+                "$addFields": {
+                    "user.password": {
+                        "$cond": [
+                            { "$eq": [true, true] },
+                            "$$REMOVE",
+                            0
+                        ]
+                    }
+                }
             },
             { $sort: { _id: -1 } },
             {

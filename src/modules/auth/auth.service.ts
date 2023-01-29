@@ -33,11 +33,9 @@ export class AuthService {
 
   async login(user: LoginPayloadDto)
     : Promise<LoginResultDto | {}> {
-      console.log(user)
     let userExists: Users = await this.usersService.getCredentialsLogin({
       email: user.email
     })
-    console.log(userExists)
     if (!userExists || !(await bcrypt.compare(user?.password, userExists?.password))) throw this.utils.throwNotFoundException(
       this.utils.errorMessages.invalidCredentials
     )

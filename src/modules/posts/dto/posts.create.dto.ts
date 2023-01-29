@@ -2,8 +2,6 @@ import { IsNotEmpty } from "@nestjs/class-validator";
 import mongoose from "mongoose";
 
 export class CreatePost {
-    _id?: string
-
     @IsNotEmpty()
     title?: string;
 

@@ -250,9 +250,14 @@ export class PostsRepository {
 
     async findCategories() {
         const r = await this.postsModel.aggregate([
+            {
+                "$match": {
+                    deleted_at: null
+                }
+            },
             { $unwind: "$tags" },
             { "$group": { _id: "$tags", count: { $sum: 1 } } },
-            { $sort: { "count": -1 } },
+            { $sort: { "count": -1,_id: -1 } },
             {
                 $group: {
                     "_id": null, "tags_details": {
@@ -265,13 +270,15 @@ export class PostsRepository {
             },
             { $project: { "_id": 0, "tags_details": 1 } },
         ])
-
-        return r[0].tags_details
+        if (r?.length > 0)
+            return r[0]?.tags_details
+        return null
     }
     async edit(dto: EditPost) {
+        const { _id, ...query } = dto
         await this.postsModel.findOneAndUpdate(
             { _id: dto._id, user_id: dto.user_id },
-            { ...dto, updated_at: new Date() },
+            { ...query, updated_at: new Date() },
             { upsert: true, new: false });
         return {
             message: 'ok'

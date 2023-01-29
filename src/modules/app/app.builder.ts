@@ -11,7 +11,10 @@ export async function appBuilder() {
       'http://localhost:3000',
       'http://127.0.0.1:3000',
       'http://192.168.100.10:3000',
-      'http://177.73.101.148:3000'
+      'http://177.73.101.148:3000',
+      '89.116.225.8:3000',
+      '89.116.225.8:443',
+      '89.116.225.8'
     ],
     "methods": ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'options'],
     credentials: true,

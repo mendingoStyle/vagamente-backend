@@ -1,13 +1,18 @@
-import { Transform } from "class-transformer";
-import { PaginationPayloadDto } from "modules/utils/dto/pagination.dto";
+import { Transform, Type } from "class-transformer";
+import { IsOptional, IsString } from "class-validator";
 import mongoose from "mongoose";
 
 export class EditPost {
-    @Transform(({ value }) => new mongoose.Types.ObjectId(value))
-    _id?: mongoose.Types.ObjectId
+    
+    @IsString()
+    @IsOptional()
+    "_id"?: string
 
+    @IsString()
+    @IsOptional()
     user_id?: string;
 
-    deletedAt: Date
+    @Type(() => Date)
+    deleted_at: Date
 
 }
