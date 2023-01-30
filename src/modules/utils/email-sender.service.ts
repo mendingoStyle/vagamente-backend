@@ -25,7 +25,10 @@ export class EmailSenderSevice {
       },
     });
 
-    const templateFile = fs.readFileSync('src\\modules\\utils\\templates\\forget-password.html', 'utf8');
+    const templateFile = this.config.get('PASSWORD_EMAIL') === 'DEVELOPMENT'
+      ? fs.readFileSync('src\\modules\\utils\\templates\\forget-password.html', 'utf8')
+      : fs.readFileSync('src/modules/utils/templates/forget-password.html', 'utf8');
+
     const rendered = Mustache.render(templateFile, { url: url, vagamenteUrl: this.config.get('FRONT_URL') });
 
     const mailOptions = {
