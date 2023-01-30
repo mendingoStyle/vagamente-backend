@@ -25,7 +25,7 @@ export class EmailSenderSevice {
       },
     });
 
-    const templateFile = this.config.get('PASSWORD_EMAIL') === 'DEVELOPMENT'
+    const templateFile = this.config.get('APP_ENV') === 'DEVELOPMENT'
       ? fs.readFileSync('src\\modules\\utils\\templates\\forget-password.html', 'utf8')
       : fs.readFileSync('src/modules/utils/templates/forget-password.html', 'utf8');
 
@@ -36,7 +36,6 @@ export class EmailSenderSevice {
       to: senderDto.email,
       subject: senderDto.subject,
       html: rendered,
-      
     };
 
     const promise = new Promise(async (resolve, reject) => {
