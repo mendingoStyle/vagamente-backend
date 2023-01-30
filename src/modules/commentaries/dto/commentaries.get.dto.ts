@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer";
 import { PaginationPayloadDto } from "modules/utils/dto/pagination.dto";
 import mongoose from "mongoose";
 
@@ -7,8 +8,9 @@ export class GetCommentary extends PaginationPayloadDto {
     commentary?: string;
 
     user_id?: string
-
-    post_id: string
+    
+    @Transform(({ value }) => new mongoose.Types.ObjectId(value))
+    post_id: mongoose.Types.ObjectId
 
     created_at: Date;
 

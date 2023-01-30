@@ -9,7 +9,9 @@ import { LoggedUser } from "modules/utils/decorators/user.decorator";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 
 @Controller('posts')
-@UsePipes(new ValidationPipe({ transform: true }))
+@UsePipes(new ValidationPipe({
+    transform: true
+}))
 export class PostsController {
     constructor(private readonly service: PostsService) { }
 
@@ -22,7 +24,7 @@ export class PostsController {
                 fileType: '^.*\.(jpg|JPG|gif|png|mp4|jpeg|JPEG|webp)$',
             })
             .addMaxSizeValidator({
-                maxSize: 100000
+                maxSize: 10000000
             })
             .build({
                 errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -67,7 +69,7 @@ export class PostsController {
     @UseGuards(JwtAuthGuard)
     @Patch()
     edit(
-        @Query() dto: EditPost,
+        @Body() dto: any,
         @LoggedUser() user: IAccessToken,
     ): Promise<any> {
         return this.service.edit(dto, user)

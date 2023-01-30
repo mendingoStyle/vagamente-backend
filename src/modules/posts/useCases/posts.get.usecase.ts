@@ -19,7 +19,7 @@ export class GetPostUseCase {
                 const user = await this.tokenController.verifyToken(token.split('Bearer ')[1])
                 if (user) userId = user.id
             } catch (e) { }
-        return this.repository.findAll(dto, userId)
+        return this.repository.findAll({ ...dto, deleted_at: null }, userId)
     }
     async findHot(dto: GetPost, token: string) {
         this.validator.findAllValidate(dto, token)
@@ -29,7 +29,7 @@ export class GetPostUseCase {
                 const user = await this.tokenController.verifyToken(token.split('Bearer ')[1])
                 if (user) userId = user.id
             } catch (e) { }
-        return this.repository.findHot(dto, userId)
+        return this.repository.findHot({ ...dto, deleted_at: null }, userId)
     }
     async findTrending(dto: GetPost, token: string) {
         this.validator.findAllValidate(dto, token)
@@ -39,7 +39,7 @@ export class GetPostUseCase {
                 const user = await this.tokenController.verifyToken(token.split('Bearer ')[1])
                 if (user) userId = user.id
             } catch (e) { }
-        return this.repository.findTrending(dto, userId)
+        return this.repository.findTrending({ ...dto, deleted_at: null }, userId)
     }
     findCategories() {
         //this.validator.findAllValidate()

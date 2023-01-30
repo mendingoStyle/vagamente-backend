@@ -8,8 +8,8 @@ export class CommentariesValidator {
     constructor(
         private readonly utils: UtilsService
     ) { }
-    async validateToSave(reaction: CreateCommentary): Promise<any> {
-        if (!reaction.answer_id && !reaction.post_id)
+    validateToSave(commentary: CreateCommentary) {
+        if (!commentary.answer_id && !commentary.post_id)
             throw this.utils.throwErrorBadReqException('Preencha o id do post ou da resposta')
     }
     async findAllValidate(reaction) {

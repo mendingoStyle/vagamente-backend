@@ -3,9 +3,16 @@ import { json } from 'express'
 import { join } from 'path'
 import { AppModule } from './app.module'
 import serve from 'express-static'
-
+import * as fs from 'fs'
 export async function appBuilder() {
-  const app = await NestFactory.create(AppModule)
+
+  const httpsOptions = {
+    key: fs.readFileSync('./key2.pem'),
+    cert: fs.readFileSync('./cert2.pem'),
+  };
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions,
+  })
   app.enableCors({
     "origin": [
       'http://localhost:3000',
