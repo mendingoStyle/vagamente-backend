@@ -11,7 +11,8 @@ export async function appBuilder() {
       'http://localhost:3000',
       'http://127.0.0.1:3000',
       'http://192.168.100.10:3000',
-      'http://177.73.101.148:3000'
+      'https://vagamente.com.br',
+      'https://www.vagamente.com.br',
     ],
     "methods": ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'options'],
     credentials: true,
