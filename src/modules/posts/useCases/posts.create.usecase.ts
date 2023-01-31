@@ -20,11 +20,12 @@ export class CreatePostUseCase {
     async create(post: CreatePost, file: Express.Multer.File, token?: string) {
         try {
             let img = null
-            if (!post.content_resource)
+            if (!post.content_resource) {
                 img = await this.uploadService.create(file)
+            }
             else {
                 img = {
-                    url: post.content_resource
+                    secure_url: post.content_resource
                 }
             }
             if (post.tags) {
@@ -35,7 +36,7 @@ export class CreatePostUseCase {
                 })
             }
             const postWithTimeAndFile = {
-                ...post, created_at: new Date(), updated_at: new Date(), content_resource: img?.url
+                ...post, created_at: new Date(), updated_at: new Date(), content_resource: img?.secure_url
             }
             this.validator.validateToSave(postWithTimeAndFile)
             if (token)
