@@ -4,15 +4,27 @@ import { join } from 'path'
 import { AppModule } from './app.module'
 import serve from 'express-static'
 import * as fs from 'fs'
+require('dotenv').config()
+
 export async function appBuilder() {
 
   const httpsOptions = {
-    key: fs.readFileSync('./key2.pem'),
-    cert: fs.readFileSync('./cert2.pem'),
+    key: null,
+    cert: null,
   };
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions,
-  })
+
+  let appOptions = {};
+
+  if (process.env.APP_ENV === 'PRODUCTION') {
+    httpsOptions.key = fs.readFileSync('./key2.pem');
+    httpsOptions.cert = fs.readFileSync('./cert2.pem');
+
+    appOptions = {
+      httpsOptions
+    }
+  }
+
+  const app = await NestFactory.create(AppModule, appOptions)
   app.enableCors({
     "origin": [
       'http://localhost:3000',

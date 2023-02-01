@@ -1,20 +1,21 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 const cloudinary = require("cloudinary").v2;
 const streamifier = require('streamifier');
 
 @Injectable()
 export class UploadService {
-    constructor() { }
+    constructor(private readonly configService: ConfigService) { }
     async create(file): Promise<any> {
         cloudinary.config({
-            cloud_name: 'dvzunnikc',
-            api_key: '694778842161446',
-            api_secret: 'cFZEfErzqhnevyGvyfJr2wSzsgE',
+            cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
+            api_key: this.configService.get('CLOUDINARY_API_KEY'),
+            api_secret: this.configService.get('CLOUDINARY_API_SECRET'),
             secure: true
         });
   
         let fileObjOptions: any = {
-            folder: "foo"
+            folder: this.configService.get('CLOUDINARY_POST_FOLDER')
         }
         if (file.mimetype.includes('video')) {
             fileObjOptions = {
