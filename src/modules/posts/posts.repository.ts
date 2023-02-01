@@ -195,7 +195,7 @@ export class PostsRepository {
                             cond: {
                                 $and: [
                                     {
-                                        $gte: ["$like.created_at", new Date().setHours(new Date().getHours() - 2)]
+                                        $gte: ["$like.created_at", new Date(new Date().setHours(new Date().getHours() - 2))]
                                     },
 
                                 ]
@@ -212,7 +212,7 @@ export class PostsRepository {
                             cond: {
                                 $and: [
                                     {
-                                        $gte: ["$commentaries.created_at", new Date().setHours(new Date().getHours() - 2)]
+                                        $gte: ["$commentaries.created_at", new Date(new Date().setHours(new Date().getHours() - 2))]
                                     },
                                 ]
                             }
@@ -257,7 +257,7 @@ export class PostsRepository {
             },
             { $unwind: "$tags" },
             { "$group": { _id: "$tags", count: { $sum: 1 } } },
-            { $sort: { "count": -1,_id: -1 } },
+            { $sort: { "count": -1, _id: -1 } },
             {
                 $group: {
                     "_id": null, "tags_details": {

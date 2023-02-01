@@ -1,5 +1,5 @@
 import { IsNotEmpty } from "@nestjs/class-validator";
-import mongoose from "mongoose";
+
 
 export class CreatePost {
     @IsNotEmpty()
@@ -10,6 +10,8 @@ export class CreatePost {
     created_at: Date;
 
     content_resource: string
+
+    description: string;
 
     updated_at: Date
 

@@ -15,6 +15,8 @@ export class GetPost extends PaginationPayloadDto {
 
     content_resource: string
 
+    description:string
+
     updated_at: Date
 
     tags: string[]
