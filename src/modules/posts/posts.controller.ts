@@ -24,7 +24,7 @@ export class PostsController {
                 fileType: '^.*\.(jpg|JPG|gif|png|mp4|jpeg|JPEG|webp)$',
             })
             .addMaxSizeValidator({
-                maxSize: 10000000
+                maxSize: 20000000
             })
             .build({
                 errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
