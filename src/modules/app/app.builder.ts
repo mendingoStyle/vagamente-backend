@@ -16,7 +16,7 @@ export async function appBuilder() {
   let appOptions = {};
 
   if (process.env.APP_ENV === 'PRODUCTION') {
-    httpsOptions.key = fs.readFileSync('./key.pem');
+    httpsOptions.key = fs.readFileSync('./key2.pem');
     httpsOptions.cert = fs.readFileSync('./cert2.pem');
 
     appOptions = {

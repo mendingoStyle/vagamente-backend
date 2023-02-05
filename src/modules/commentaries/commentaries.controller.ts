@@ -4,7 +4,7 @@ import { CreateCommentary } from "./dto/commentaries.create.dto";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 import { LoggedUser } from "modules/utils/decorators/user.decorator";
 import { GetCommentary } from "./dto/commentaries.get.dto";
-import { JwtAuthGuard } from "modules/auth/jwt-auth.guard";
+import { JwtAuthGuard } from "modules/auth/guard/jwt-auth.guard";
 
 @Controller('commentaries')
 @UsePipes(new ValidationPipe({ transform: true }))

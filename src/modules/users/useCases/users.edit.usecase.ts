@@ -37,7 +37,7 @@ export class EditUserUseCase {
         }
 
         if (!body.avatar && file) {
-            body.avatar = (await this.uploadService.create(file))?.url
+            body.avatar = (await this.uploadService.create(file))?.secure_url
         }
         body._id = userId
         if (body.password) {
@@ -108,7 +108,7 @@ export class EditUserUseCase {
         if (!auth.changePassword) {
             throw this.utils.throwForbiddenException('Não autorizado')
         }
- 
+
         if (auth.id) {
             const update = await this.repository.patch({ _id: auth.id, password: await bcrypt.hash(user.password, 12) })
             if (update.message)

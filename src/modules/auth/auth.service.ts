@@ -58,8 +58,12 @@ export class AuthService {
         avatar: userExists.avatar,
         username: userExists.username,
       }
+    } else {
+      const accessTokens = await this.tokenService.createTokens(
+        info
+      )
+      return accessTokens
     }
-
   }
 
 }

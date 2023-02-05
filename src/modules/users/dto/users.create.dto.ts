@@ -49,3 +49,7 @@ export class EditUser {
     deleted_at?: Date;
 }
 
+export class LoginInfoRegister {
+    user_id: string
+    created_at: Date
+}

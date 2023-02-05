@@ -4,30 +4,24 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { Schema as MongooseSchema } from 'mongoose'
 import { Users } from './users.schema';
 
-export type UsersBadgesDocument = HydratedDocument<UsersBadges>;
+export type RefreshTokenDocument = HydratedDocument<RefreshToken>;
 
 @Schema()
-export class UsersBadges {
+export class RefreshToken {
+    @Prop()
+    token: string;
+
     @Prop({
         type: mongoose.Schema.Types.ObjectId,
         ref: Users.name
     })
     user_id: mongoose.Schema.Types.ObjectId;
 
-    @Prop({
-        type: mongoose.Schema.Types.ObjectId,
-        ref: UsersBadges.name
-    })
-    badge_id: mongoose.Schema.Types.ObjectId
-
     @Prop()
     created_at: Date;
 
     @Prop()
     updated_at: Date;
-
-    @Prop()
-    deleted_at: Date;
 }
 
-export const UsersBadgesSchema = SchemaFactory.createForClass(UsersBadges);
+export const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);
