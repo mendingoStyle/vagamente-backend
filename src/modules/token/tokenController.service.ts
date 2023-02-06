@@ -196,10 +196,10 @@ export class TokenService {
     let user: Users = null
     if (oldRefreshToken) {
       if (oldRefreshToken.user_id != verifyToken.sub)
-        this.utils.throwUnauthorizedException('Não autorizado')
+        throw this.utils.throwUnauthorizedException('Não autorizado')
       user = await this.usersModel.findOne({ _id: oldRefreshToken?.user_id?.toString() })
     } else {
-      this.utils.throwNotFoundException('Não autorizado refaça o login')
+      throw this.utils.throwInvalidRefreshTokenException('Não autorizado refaça o login')
     }
     const payload = {
       id: user._id,
@@ -211,7 +211,6 @@ export class TokenService {
     } as IAccessToken
 
     const tokens = await this.createTokens(payload)
-
     return tokens
   }
 

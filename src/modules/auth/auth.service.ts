@@ -6,7 +6,7 @@ import { LoginPayloadDto, LoginResultDto } from './dto/login.dto'
 import { IAccessToken } from './interfaces/jwt.interface'
 import { Users } from 'database/schemas/users.schema'
 import { TokenService } from 'modules/token/tokenController.service'
-import { GetUser } from 'modules/users/dto/users.get.dto'
+import { AxiosService } from 'modules/axios/axios.service'
 
 
 
@@ -17,7 +17,8 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
     private utils: UtilsService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private readonly axiosService: AxiosService
   ) { }
 
   async validateUser(user: string, pass: string): Promise<boolean> {
@@ -46,12 +47,12 @@ export class AuthService {
       confirmEmail: false,
       email: userExists.email
     }
-
+    let r = null
     if (!user.refresh) {
       const accessTokens = await this.tokenService.loginDefault(
         info
       )
-      return {
+      r = {
         ...accessTokens,
         name: userExists.name,
         id: userExists._id,
@@ -62,8 +63,20 @@ export class AuthService {
       const accessTokens = await this.tokenService.createTokens(
         info
       )
-      return accessTokens
+      r = {
+        ...accessTokens,
+        name: userExists.name,
+        id: userExists._id,
+        avatar: userExists.avatar,
+        username: userExists.username,
+      }
     }
+    try {
+      this.axiosService.internRequest({ user_id: r.id, created_at: new Date() }, 'users')
+    } catch (e) {
+      console.log(e)
+    }
+    return r
   }
 
 }

@@ -13,7 +13,7 @@ export class UploadService {
             api_secret: this.configService.get('CLOUDINARY_API_SECRET'),
             secure: true
         });
-  
+
         let fileObjOptions: any = {
             folder: this.configService.get('CLOUDINARY_POST_FOLDER')
         }
@@ -36,7 +36,10 @@ export class UploadService {
                         ...fileObjOptions
                     },
                     (error: any, result: any) => {
-                        if (error) reject(null)
+                        if (error) {
+                            console.log(error)
+                            reject(null)
+                        }
                         if (result) {
                             resolve(result)
                         }

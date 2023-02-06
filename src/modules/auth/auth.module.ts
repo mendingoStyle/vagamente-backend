@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller'
 import { TokenModule } from 'modules/token/tokenController.module'
 import { LocalStrategy } from './guard/local.strategy'
 import { JwtStrategy } from './guard/jwt.strategy'
+import { AxiosModule } from 'modules/axios/axios.module'
 
 
 @Module({
@@ -15,7 +16,8 @@ import { JwtStrategy } from './guard/jwt.strategy'
     PassportModule,
     UtilsModule,
     TokenModule,
-    UsersModule
+    UsersModule,
+    AxiosModule
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
