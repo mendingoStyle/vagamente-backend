@@ -5,9 +5,13 @@ import { UtilsService } from 'modules/utils/utils.service'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import { TokenExpiredError } from 'jsonwebtoken'
-import { Users } from 'database/schemas/users.schema'
+import { Users, UsersDocument } from 'database/schemas/users.schema'
 import { GetUser } from 'modules/users/dto/users.get.dto'
 import { ForgetPasswordPayloadDto } from './dto/forgetPassword.dto'
+import { RefreshTokenResultDto } from './dto/refresh.dto'
+import { RefreshToken, RefreshTokenDocument } from 'database/schemas/refresh_token.schema'
+import { InjectModel } from '@nestjs/mongoose'
+import mongoose, { Model } from 'mongoose'
 
 
 @Injectable()
@@ -16,6 +20,8 @@ export class TokenService {
     private utils: UtilsService,
     private readonly jwtService: JwtService,
     private config: ConfigService,
+    @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshTokenDocument>,
+    @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
   ) { }
 
 
@@ -156,6 +162,58 @@ export class TokenService {
       )
     }
   }
+
+  async createTokens(payload: IAccessToken): Promise<RefreshTokenResultDto> {
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.config.get('SECRET_KEY'),
+      expiresIn: this.config.get('TOKEN_EXPIRE_TIME'),
+    })
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: this.config.get('SECRET_KEY_REFRESH'),
+      expiresIn: this.config.get('TOKEN_EXPIRE_TIME_REFRESH'),
+    })
+
+    await this.createOrUpdate({ token: refreshToken, user_id: payload.id })
+    return { accessToken, refreshToken }
+  }
+  async createOrUpdate(refreshToken: {
+    token: string, user_id: any
+  }): Promise<RefreshToken> {
+    return await this.refreshTokenModel.create({ ...refreshToken, created_at: new Date() })
+  }
+
+  async logout(token: string): Promise<{ message: string }> {
+    try {
+      this.refreshTokenModel.remove({ token: token })
+      return { message: 'logout feito com sucesso' }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  async refresh(refreshToken: string): Promise<RefreshTokenResultDto> {
+    let oldRefreshToken = await this.refreshTokenModel.findOne({ refreshToken: refreshToken })
+    const verifyToken = await this.verifyTokenRefresh(refreshToken)
+    let user: Users = null
+    if (oldRefreshToken) {
+      if (oldRefreshToken.user_id != verifyToken.sub)
+        throw this.utils.throwUnauthorizedException('Não autorizado')
+      user = await this.usersModel.findOne({ _id: oldRefreshToken?.user_id?.toString() })
+    } else {
+      throw this.utils.throwInvalidRefreshTokenException('Não autorizado refaça o login')
+    }
+    const payload = {
+      id: user._id,
+      user: user.email,
+      sub: user._id,
+      changePassword: false,
+      confirmEmail: false,
+      refresh: true
+    } as IAccessToken
+
+    const tokens = await this.createTokens(payload)
+    return tokens
+  }
+
 
 
 }

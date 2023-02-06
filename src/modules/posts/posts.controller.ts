@@ -4,9 +4,9 @@ import { CreatePost } from "./dto/posts.create.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { GetPost } from "./dto/posts.get.dto";
 import { EditPost } from "./dto/posts.edit.dto";
-import { JwtAuthGuard } from "modules/auth/jwt-auth.guard";
 import { LoggedUser } from "modules/utils/decorators/user.decorator";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
+import { JwtAuthGuard } from "modules/auth/guard/jwt-auth.guard";
 
 @Controller('posts')
 @UsePipes(new ValidationPipe({

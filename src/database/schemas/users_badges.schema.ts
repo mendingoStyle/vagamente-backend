@@ -1,13 +1,13 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Schema as MongooseSchema } from 'mongoose'
 import { Users } from './users.schema';
+import { Badges } from './badges.schema';
 
-export type TagsDocument = HydratedDocument<Badges>;
+export type UsersBadgesDocument = HydratedDocument<UsersBadges>;
 
 @Schema()
-export class Badges {
+export class UsersBadges {
     @Prop({
         type: mongoose.Schema.Types.ObjectId,
         ref: Users.name
@@ -30,4 +30,4 @@ export class Badges {
     deleted_at: Date;
 }
 
-export const TagsSchema = SchemaFactory.createForClass(Badges);
+export const UsersBadgesSchema = SchemaFactory.createForClass(UsersBadges);

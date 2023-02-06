@@ -115,6 +115,22 @@ export class PostsRepository {
                             "$$REMOVE",
                             "$user"
                         ]
+                    },
+                    "user_id": {
+                        "$cond": [
+                            {
+                                "$and": [
+                                    {
+                                        $or: [
+                                            { "$eq": ["$isAnonymous", true] },
+                                        ]
+                                    },
+                                    { "$ne": ["$user_id", new mongoose.Types.ObjectId(userId)] }
+                                ]
+                            },
+                            "$$REMOVE",
+                            "$user"
+                        ]
                     }
                 }
             },

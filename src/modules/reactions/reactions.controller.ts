@@ -5,7 +5,7 @@ import { Reactions } from "database/schemas/posts.schema";
 import { CreateReaction } from "./dto/reactions.create.dto";
 import { LoggedUser } from "modules/utils/decorators/user.decorator";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
-import { JwtAuthGuard } from "modules/auth/jwt-auth.guard";
+import { JwtAuthGuard } from "modules/auth/guard/jwt-auth.guard";
 
 
 @Controller('reactions')

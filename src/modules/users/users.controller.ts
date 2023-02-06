@@ -1,14 +1,12 @@
 import { Body, Controller, Get, Patch, Post, Query, UploadedFile, Headers, UseGuards, UseInterceptors, UsePipes, ValidationPipe, ParseFilePipeBuilder, HttpStatus } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
-import { GetUser } from "./dto/users.get.dto";
-import { Users } from "database/schemas/users.schema";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { LoggedUser } from "modules/utils/decorators/user.decorator";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
-import { JwtAuthGuard } from "modules/auth/jwt-auth.guard";
 import { ForgetPasswordPayloadDto } from "modules/token/dto/forgetPassword.dto";
 import { UserChangePasswordDTO } from "./dto/recovery-password.dto";
+import { JwtAuthGuard } from "modules/auth/guard/jwt-auth.guard";
 
 
 @Controller('users')
