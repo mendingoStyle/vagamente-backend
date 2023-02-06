@@ -5,10 +5,14 @@ import axios, { Axios } from 'axios'
 export class AxiosService {
 
   async internRequest(data: any, url: string) {
-    return axios.post(process.env.INTERN_URL + '/' + url, data, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
+    try {
+      const teste = await axios.post(process.env.INTERN_URL + '/' + url, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      return teste
+    } catch (e) {
+    }
   }
 }

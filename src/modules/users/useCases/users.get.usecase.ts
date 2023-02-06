@@ -3,6 +3,7 @@ import { GetUser } from "../dto/users.get.dto";
 import { UsersValidator } from "../validators/users.validator";
 import { UsersRepository } from "../users.repository";
 import { TokenService } from "modules/token/tokenController.service";
+import { UtilsService } from "modules/utils/utils.service";
 
 
 @Injectable()
@@ -10,7 +11,8 @@ export class GetUserUseCase {
     constructor(
         private readonly validator: UsersValidator,
         private readonly repository: UsersRepository,
-        private readonly token: TokenService
+        private readonly token: TokenService,
+        private readonly utils: UtilsService
     ) { }
     async findAll(dto: GetUser) {
         this.validator.findAllValidate(dto)
@@ -37,6 +39,7 @@ export class GetUserUseCase {
         if (token) {
             user = await this.token.verifyToken(token.split('Bearer ')[1])
         }
+        if (token && !user) throw this.utils.throwUnauthorizedException('Token inválido')
         return this.repository.findOneByEmailOrUsernameBoolean(dto, user?.id)
     }
 
