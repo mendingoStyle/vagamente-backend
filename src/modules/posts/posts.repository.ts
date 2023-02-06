@@ -195,7 +195,7 @@ export class PostsRepository {
                             cond: {
                                 $and: [
                                     {
-                                        $gte: ["$like.created_at", new Date(new Date().setHours(new Date().getHours() - 2))]
+                                        $gte: ["$like.created_at", new Date().setHours(new Date().getHours() - 2)]
                                     },
 
                                 ]
