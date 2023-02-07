@@ -10,6 +10,7 @@ import { TokenModule } from 'modules/token/tokenController.module';
 import { AuthModule } from 'modules/auth/auth.module';
 import { ReactionsModule } from 'modules/reactions/reactions.module';
 import { CommentariesModule } from 'modules/commentaries/commentaries.module';
+import { BadgesModule } from 'modules/badges/badges.module';
 require('dotenv').config()
 
 @Module({
@@ -25,7 +26,8 @@ require('dotenv').config()
     TokenModule,
     AuthModule,
     ReactionsModule,
-    CommentariesModule
+    CommentariesModule,
+    BadgesModule
   ],
   controllers: [AppController],
 })

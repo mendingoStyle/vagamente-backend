@@ -41,6 +41,9 @@ export class Users {
 
     @Prop()
     deleted_at: Date;
+
+    @Prop()
+    firstLogin: boolean
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

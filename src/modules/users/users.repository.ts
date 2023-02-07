@@ -5,16 +5,21 @@ import mongoose, { Model } from "mongoose";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
 import { UtilsService } from "modules/utils/utils.service";
 import { IUserValidateExists } from "modules/utils/dto/user.interface";
+import { Badges, BadgesDocument } from "database/schemas/badges.schema";
+import { BadgesService } from "modules/badges/badges.service";
 
 
 @Injectable()
 export class UsersRepository {
     constructor(
         @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
-        private readonly utils: UtilsService
+        private readonly utils: UtilsService,
+        private readonly badgesService: BadgesService
     ) { }
     async create(body: CreateUser) {
-        const userModel = new this.usersModel(body);
+
+        const userModel = new this.usersModel({ ...body, firstLogin: true });
+        await this.badgesService.createFirstLoginBadge(userModel._id)
         await userModel.save();
         return {
             message: 'ok'

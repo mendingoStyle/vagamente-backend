@@ -35,6 +35,7 @@ export class PostsRepository {
                     as: 'user',
                 },
             },
+
             {
                 $lookup: {
                     from: 'commentaries',
@@ -129,7 +130,7 @@ export class PostsRepository {
                                 ]
                             },
                             "$$REMOVE",
-                            "$user"
+                            "$user_id"
                         ]
                     }
                 }
@@ -145,6 +146,24 @@ export class PostsRepository {
                     }
                 }
             },
+            {
+                $lookup: {
+                    from: 'usersbadges',
+                    localField: 'user_id',
+                    foreignField: 'user_id',
+                    as: 'usersBadges',
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'badges',
+                    localField: 'usersBadges.badge_id',
+                    foreignField: '_id',
+                    as: 'badge',
+                },
+            },
+            { $project: { 'usersBadges': 0 } },
         ]
     }
     async findAll(dto: GetPost, userId: string): Promise<Posts[]> {
@@ -199,7 +218,7 @@ export class PostsRepository {
         const { page, limit, ...query } = dto
         let r: any = null
         let params = this.utils.applyFilterAggregate(query)
-
+        const dateFilterCommentaryReactions = new Date(new Date().setHours(new Date().getHours() - 2))
         r = this.postsModel.aggregate([
             params,
             ...this.defaultGet(userId),
@@ -208,10 +227,14 @@ export class PostsRepository {
                     likes_2h: {
                         $filter: {
                             input: "$like",
+                            as: 'like',
                             cond: {
                                 $and: [
                                     {
-                                        $gte: ["$like.created_at", new Date().setHours(new Date().getHours() - 2)]
+                                        $gte: [
+                                            "$$like.created_at",
+                                            dateFilterCommentaryReactions
+                                        ]
                                     },
 
                                 ]
@@ -225,10 +248,14 @@ export class PostsRepository {
                     commentaries_2h: {
                         $filter: {
                             input: "$commentaries",
+                            as: "commentaries",
                             cond: {
                                 $and: [
                                     {
-                                        $gte: ["$commentaries.created_at", new Date(new Date().setHours(new Date().getHours() - 2))]
+                                        $gte: [
+                                            "$$commentaries.created_at",
+                                            dateFilterCommentaryReactions
+                                        ]
                                     },
                                 ]
                             }
@@ -243,8 +270,6 @@ export class PostsRepository {
                 $addFields: { likes_2h: { $size: "$likes_2h" } }
             },
 
-            { $project: { 'commentaries_2h': 0 } },
-
             {
                 "$addFields": {
                     "likes_commentaries": {
@@ -252,7 +277,7 @@ export class PostsRepository {
                     }
                 }
             },
-            { $project: { 'like': 0, 'dislike': 0, 'commentaries': 0 } },
+            { $project: { 'like': 0, 'dislike': 0, 'commentaries_2h': 0, 'commentaries': 0 } },
             { $sort: { likes_commentaries: -1, _id: -1 } },
             {
                 '$facet': {

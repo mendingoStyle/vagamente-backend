@@ -8,6 +8,7 @@ import { TokenModule } from 'modules/token/tokenController.module'
 import { LocalStrategy } from './guard/local.strategy'
 import { JwtStrategy } from './guard/jwt.strategy'
 import { AxiosModule } from 'modules/axios/axios.module'
+import { BadgesModule } from 'modules/badges/badges.module'
 
 
 @Module({
@@ -17,7 +18,8 @@ import { AxiosModule } from 'modules/axios/axios.module'
     UtilsModule,
     TokenModule,
     UsersModule,
-    AxiosModule
+    AxiosModule,
+    BadgesModule
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],

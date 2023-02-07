@@ -47,6 +47,9 @@ export class EditUser {
     updated_at?: Date;
 
     deleted_at?: Date;
+
+    firstLogin?: boolean
+
 }
 
 export class LoginInfoRegister {

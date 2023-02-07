@@ -7,6 +7,7 @@ import { IAccessToken } from './interfaces/jwt.interface'
 import { Users } from 'database/schemas/users.schema'
 import { TokenService } from 'modules/token/tokenController.service'
 import { AxiosService } from 'modules/axios/axios.service'
+import { BadgesService } from 'modules/badges/badges.service'
 
 
 
@@ -18,7 +19,9 @@ export class AuthService {
     private usersService: UsersService,
     private utils: UtilsService,
     private tokenService: TokenService,
-    private readonly axiosService: AxiosService
+    private readonly axiosService: AxiosService,
+    private readonly badgesService: BadgesService
+
   ) { }
 
   async validateUser(user: string, pass: string): Promise<boolean> {
@@ -75,6 +78,14 @@ export class AuthService {
       this.axiosService.internRequest({ user_id: r.id, created_at: new Date() }, 'users')
     } catch (e) {
       console.log(e)
+    }
+    if (userExists.firstLogin) {
+      const firstLogin = await this.badgesService.findFirstBadge()
+      this.usersService.patch({ firstLogin: false }, undefined, userExists._id)
+      return {
+        firstLogin,
+        ...r
+      }
     }
     return r
   }
