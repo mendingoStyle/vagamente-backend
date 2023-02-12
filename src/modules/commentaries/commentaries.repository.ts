@@ -38,14 +38,17 @@ export class CommentariesRepository {
     }
 
     async create(body: CreateCommentary) {
-        return await this.commentariesModel.findByIdAndUpdate({
-            _id: body._id,
-        }, {
-            ...body
-        }, {
-            upsert: true,
-            new: true
-        })
+        if (body._id)
+            return await this.commentariesModel.findByIdAndUpdate({
+                _id: body._id,
+            }, {
+                ...body
+            }, {
+                upsert: true,
+                new: true
+            })
+        const commentarieModel = new this.commentariesModel({ ...body, created_at: new Date(), updated_at: new Date() });
+        return commentarieModel.save();
 
     }
     async findAll(dto: GetCommentary) {
