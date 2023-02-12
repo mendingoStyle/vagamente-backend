@@ -43,12 +43,17 @@ export class CommentariesRepository {
                 _id: body._id,
             }, {
                 ...body,
-                counter: 0
+                updated_at: new Date(this.utils.dateTimeZoneBrasil()),
+
             }, {
                 upsert: true,
                 new: true
             })
-        const commentarieModel = new this.commentariesModel({ ...body, created_at: new Date(this.utils.dateTimeZoneBrasil()) });
+        const commentarieModel = new this.commentariesModel({
+            ...body,
+            created_at: new Date(this.utils.dateTimeZoneBrasil()),
+            counter: 0
+        });
         return commentarieModel.save();
 
     }
@@ -89,6 +94,35 @@ export class CommentariesRepository {
                             0
                         ]
                     }
+                }
+            },
+            {
+                "$addFields": {
+                    "user": {
+                        "$cond": [
+                            {
+                                $or: [
+                                    { "$eq": [{ "$type": "$deleted_at" }, "missing"] },
+                                    { "$eq": [{ "$type": "$deleted_at" }, "null"] },
+                                ]
+                            },
+                            "$user",
+                            "$$REMOVE",
+                        ]
+                    },
+                    "commentary": {
+                        "$cond": [
+                            {
+                                $or: [
+                                    { "$eq": [{ "$type": "$deleted_at" }, "missing"] },
+                                    { "$eq": [{ "$type": "$deleted_at" }, "null"] },
+                                ]
+                            },
+                            "$commentary",
+                            "Comentário Excluído",
+
+                        ]
+                    },
                 }
             },
             {
