@@ -10,7 +10,7 @@ export class AxiosService {
       const teste = await axios.post(process.env.INTERN_URL + '/' + url, data, {
         headers: {
           'Content-Type': 'application/json',
-          'token': process.env.SECRET_KEY
+          'token': process.env.TOKEN
         },
       })
       return teste
