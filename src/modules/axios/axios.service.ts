@@ -15,6 +15,7 @@ export class AxiosService {
       })
       return teste
     } catch (e) {
+      console.log(e)
     }
   }
 }
