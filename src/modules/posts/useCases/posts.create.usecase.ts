@@ -7,6 +7,7 @@ import { UploadService } from "modules/upload/upload.service";
 import { TagsService } from "modules/tags/tags.service";
 import { TokenService } from "modules/token/tokenController.service";
 import mongoose from "mongoose";
+import { UtilsService } from "modules/utils/utils.service";
 
 @Injectable()
 export class CreatePostUseCase {
@@ -15,7 +16,9 @@ export class CreatePostUseCase {
         private repository: PostsRepository,
         private readonly uploadService: UploadService,
         private readonly tagsService: TagsService,
-        private readonly tokenController: TokenService
+        private readonly tokenController: TokenService,
+        private readonly utils: UtilsService
+
     ) { }
     async create(post: CreatePost, file: Express.Multer.File, token?: string) {
         try {
@@ -36,7 +39,7 @@ export class CreatePostUseCase {
                 })
             }
             const postWithTimeAndFile = {
-                ...post, created_at: new Date(), updated_at: new Date(), content_resource: img?.secure_url
+                ...post, created_at: new Date(this.utils.dateTimeZoneBrasil()), updated_at: new Date(this.utils.dateTimeZoneBrasil()), content_resource: img?.secure_url
             }
             this.validator.validateToSave(postWithTimeAndFile)
             if (token)

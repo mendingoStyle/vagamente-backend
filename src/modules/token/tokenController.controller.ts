@@ -1,4 +1,4 @@
-import { RefreshJwtAuthGuard } from 'modules/auth/refresh-jwt-auth.guard';
+import { RefreshJwtAuthGuard } from 'modules/auth/guard/refresh-jwt-auth.guard';
 import { TokenService } from './tokenController.service'
 import { Controller, Post, Headers, UseGuards } from "@nestjs/common";
 import { RefreshTokenResultDto } from './dto/refresh.dto';

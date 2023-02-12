@@ -66,7 +66,7 @@ export class UsersRepository {
     async patch(body: EditUser) {
         await this.usersModel.findOneAndUpdate(
             { _id: body._id },
-            { ...body, updated_at: new Date() },
+            { ...body, updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
             { upsert: true, new: false });
         return {
             message: 'Usuário Alterado!'

@@ -75,7 +75,7 @@ export class AuthService {
       }
     }
     try {
-      this.axiosService.internRequest({ user_id: r.id, created_at: new Date() }, 'users')
+      this.axiosService.internRequest({ user_id: r.id, created_at: new Date(this.utils.dateTimeZoneBrasil()) }, 'users')
     } catch (e) {
       console.log(e)
     }

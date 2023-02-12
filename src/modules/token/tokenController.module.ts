@@ -7,7 +7,8 @@ import { UtilsModule } from 'modules/utils/utils.module'
 import { MongooseModule } from '@nestjs/mongoose'
 import { RefreshToken, RefreshTokenSchema } from 'database/schemas/refresh_token.schema'
 import { Users, UsersSchema } from 'database/schemas/users.schema'
-import { RefreshJwtStrategy } from 'modules/auth/refresh-jwt.strategy'
+import { RefreshJwtStrategy } from 'modules/auth/guard/refresh-jwt.strategy'
+import { AxiosModule } from 'modules/axios/axios.module'
 
 @Module({
   controllers: [TokenController],
@@ -22,6 +23,7 @@ import { RefreshJwtStrategy } from 'modules/auth/refresh-jwt.strategy'
       }),
       inject: [ConfigService],
     }),
+    AxiosModule,
     UtilsModule,
   ],
   exports: [TokenService],

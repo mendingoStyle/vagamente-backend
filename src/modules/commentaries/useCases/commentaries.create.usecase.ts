@@ -14,6 +14,7 @@ export class CreateCommentariesUseCase {
     async create(body: CreateCommentary, user_id: string) {
         body.user_id = user_id
         this.validator.validateToSave(body)
+        this.repository.incrementFathers(body)
         return this.repository.create(body)
     }
 }

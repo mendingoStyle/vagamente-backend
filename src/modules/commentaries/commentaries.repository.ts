@@ -13,9 +13,40 @@ export class CommentariesRepository {
         private readonly utils: UtilsService
     ) { }
 
+    async incrementFathers(body: CreateCommentary) {
+        if (body.answer_id) {
+            let answer = await this.commentariesModel.findByIdAndUpdate({
+                _id: body.answer_id
+            },
+                { $inc: { counter: 1 } },
+                { upsert: false }
+            )
+            while (answer) {
+                if (answer.answer_id) {
+                    answer = await this.commentariesModel.findByIdAndUpdate({
+                        _id: answer.answer_id
+                    },
+                        { $inc: { counter: 1 } },
+                        { upsert: false }
+                    )
+                }
+                else {
+                    answer = null
+                }
+            }
+        }
+    }
+
     async create(body: CreateCommentary) {
-        const commentarieModel = new this.commentariesModel({ ...body, created_at: new Date(), updated_at: new Date() });
-        return commentarieModel.save();
+        return await this.commentariesModel.findByIdAndUpdate({
+            _id: body._id,
+        }, {
+            ...body
+        }, {
+            upsert: true,
+            new: true
+        })
+
     }
     async findAll(dto: GetCommentary) {
         const { page, limit, ...query } = dto

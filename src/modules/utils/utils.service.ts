@@ -148,15 +148,6 @@ export class UtilsService {
     })
   }
 
-
-  calcTime(offset) {
-    const d = new Date()
-    const utc = d.getTime() + d.getTimezoneOffset() * 60000
-    const nd = new Date(utc + 3600000 * offset)
-
-    return nd
-  }
-
   dataAtualFormatada(data: Date) {
     const dia = data.getDate().toString(),
       diaF = (dia.length == 1) ? '0' + dia : dia,
@@ -196,5 +187,9 @@ export class UtilsService {
       }
     }
     return obj
+  }
+
+  dateTimeZoneBrasil(): string {
+    return new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }) + ' GMT'
   }
 }

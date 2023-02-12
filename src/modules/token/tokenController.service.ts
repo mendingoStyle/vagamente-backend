@@ -11,7 +11,8 @@ import { ForgetPasswordPayloadDto } from './dto/forgetPassword.dto'
 import { RefreshTokenResultDto } from './dto/refresh.dto'
 import { RefreshToken, RefreshTokenDocument } from 'database/schemas/refresh_token.schema'
 import { InjectModel } from '@nestjs/mongoose'
-import mongoose, { Model } from 'mongoose'
+import { Model } from 'mongoose'
+import { AxiosService } from 'modules/axios/axios.service'
 
 
 @Injectable()
@@ -22,6 +23,7 @@ export class TokenService {
     private config: ConfigService,
     @InjectModel(RefreshToken.name) private refreshTokenModel: Model<RefreshTokenDocument>,
     @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
+    private readonly axiosService: AxiosService,
   ) { }
 
 
@@ -179,7 +181,7 @@ export class TokenService {
   async createOrUpdate(refreshToken: {
     token: string, user_id: any
   }): Promise<RefreshToken> {
-    return await this.refreshTokenModel.create({ ...refreshToken, created_at: new Date() })
+    return await this.refreshTokenModel.create({ ...refreshToken, created_at: new Date(this.utils.dateTimeZoneBrasil()) })
   }
 
   async logout(token: string): Promise<{ message: string }> {
@@ -210,8 +212,8 @@ export class TokenService {
       refresh: true
     } as IAccessToken
 
-    const tokens = await this.createTokens(payload)
-    return tokens
+    this.axiosService.internRequest({ user_id: payload.id, created_at: new Date(this.utils.dateTimeZoneBrasil()) }, 'users')
+    return this.createTokens(payload)
   }
 
 

@@ -8,7 +8,7 @@ export class GetCommentary extends PaginationPayloadDto {
     commentary?: string;
 
     user_id?: string
-    
+
     @Transform(({ value }) => new mongoose.Types.ObjectId(value))
     post_id: mongoose.Types.ObjectId
 
@@ -18,6 +18,9 @@ export class GetCommentary extends PaginationPayloadDto {
 
     deleted_at: Date;
 
-    answer_id: string
+    @Transform(({ value }) => new mongoose.Types.ObjectId(value))
+    answer_id: mongoose.Types.ObjectId
+
+
 
 }

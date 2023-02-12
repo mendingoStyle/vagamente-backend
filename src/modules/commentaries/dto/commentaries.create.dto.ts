@@ -18,4 +18,6 @@ export class CreateCommentary {
     updated_at: Date;
 
     deleted_at: Date;
+
+    counter: number
 }

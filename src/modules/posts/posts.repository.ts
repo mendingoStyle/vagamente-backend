@@ -218,7 +218,7 @@ export class PostsRepository {
         const { page, limit, ...query } = dto
         let r: any = null
         let params = this.utils.applyFilterAggregate(query)
-        const dateFilterCommentaryReactions = new Date(new Date().setHours(new Date().getHours() - 2))
+        const dateFilterCommentaryReactions = new Date(new Date(this.utils.dateTimeZoneBrasil()).setHours(new Date(this.utils.dateTimeZoneBrasil()).getHours() - 2))
         r = this.postsModel.aggregate([
             params,
             ...this.defaultGet(userId),
@@ -319,7 +319,7 @@ export class PostsRepository {
         const { _id, ...query } = dto
         await this.postsModel.findOneAndUpdate(
             { _id: dto._id, user_id: dto.user_id },
-            { ...query, updated_at: new Date() },
+            { ...query, updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
             { upsert: true, new: false });
         return {
             message: 'ok'
