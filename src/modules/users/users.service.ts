@@ -50,4 +50,9 @@ export class UsersService {
         return this.useCaseEditUser.recoveryPassword(dto, token)
     }
 
+    topUsers() {
+        return this.useCaseGetUser.topUsers()
+    }
+
+
 }

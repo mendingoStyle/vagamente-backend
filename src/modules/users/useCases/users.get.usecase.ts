@@ -42,5 +42,8 @@ export class GetUserUseCase {
         if (token && !user) throw this.utils.throwUnauthorizedException('Token inválido')
         return this.repository.findOneByEmailOrUsernameBoolean(dto, user?.id)
     }
+    topUsers() {
+        return this.repository.topUsers()
+    }
 
 }

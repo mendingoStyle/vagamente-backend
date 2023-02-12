@@ -16,7 +16,7 @@ export class CommentariesService {
     async create(body: CreateCommentary, userId: string): Promise<Commentaries> {
         return this.useCaseCreateCommentaries.create(body, userId)
     }
-    async findAll(dto: GetCommentary): Promise<Commentaries[]> {
+    async findAll(dto: GetCommentary): Promise<any> {
         return this.useCaseGetCommentaries.findAll(dto)
     }
 }

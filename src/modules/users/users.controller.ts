@@ -82,4 +82,9 @@ export class UsersController {
         return await this.service.recoveryPassword(user, token)
     }
 
+    @Get('top-ten')
+    topUsers() {
+        return this.service.topUsers()
+    }
+
 }

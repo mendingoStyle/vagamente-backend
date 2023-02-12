@@ -81,8 +81,15 @@ export class PostsRepository {
                 $addFields: { dislike_count: { $size: "$dislike" } }
             },
             {
-                $addFields: { comentary_count: { $size: "$commentaries" } }
+                $addFields: { comentary_count_aux: { $size: "$commentaries" } }
             },
+            {
+                $addFields: { counter_sons: { $sum: "$commentaries.counter" } }
+            },
+            {
+                $addFields: { comentary_count: { $sum: ["$counter_sons", "$comentary_count_aux"] } }
+            },
+
             {
                 $addFields: {
                     reacts: {
@@ -163,7 +170,7 @@ export class PostsRepository {
                     as: 'badge',
                 },
             },
-            { $project: { 'usersBadges': 0 } },
+            { $project: { 'usersBadges': 0, counter_sons: 0, comentary_count_aux: 0 } },
         ]
     }
     async findAll(dto: GetPost, userId: string): Promise<Posts[]> {
@@ -243,6 +250,7 @@ export class PostsRepository {
                     }
                 }
             },
+
             {
                 $addFields: {
                     commentaries_2h: {
@@ -264,7 +272,13 @@ export class PostsRepository {
                 }
             },
             {
-                $addFields: { comentary_2h_count: { $size: "$commentaries_2h" } }
+                $addFields: { comentary_count_aux: { $size: "$commentaries_2h" } }
+            },
+            {
+                $addFields: { counter_sons: { $sum: "$commentaries_2h.counter" } }
+            },
+            {
+                $addFields: { comentary_2h_count: { $sum: ["$counter_sons", "$comentary_count_aux"] } }
             },
             {
                 $addFields: { likes_2h: { $size: "$likes_2h" } }
@@ -277,7 +291,7 @@ export class PostsRepository {
                     }
                 }
             },
-            { $project: { 'like': 0, 'dislike': 0, 'commentaries_2h': 0, 'commentaries': 0 } },
+            { $project: { 'like': 0, 'dislike': 0, 'commentaries_2h': 0, 'commentaries': 0, counter_sons: 0, comentary_count_aux: 0 } },
             { $sort: { likes_commentaries: -1, _id: -1 } },
             {
                 '$facet': {

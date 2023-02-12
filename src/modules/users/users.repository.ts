@@ -85,6 +85,71 @@ export class UsersRepository {
             return user
         }
     }
+    topUsers() {
+        return this.usersModel.aggregate([
+            {
+                $lookup: {
+                    from: 'posts',
+                    localField: '_id',
+                    foreignField: 'user_id',
+                    as: 'posts',
+                }
+            },
+            {
+                $lookup: {
+                    from: 'reactions',
+                    localField: '_id',
+                    foreignField: 'user_id',
+                    as: 'reactions',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'commentaries',
+                    localField: '_id',
+                    foreignField: 'user_id',
+                    as: 'commentaries',
+                },
+            },
+            {
+                $addFields: { commentaries_count: { $size: "$commentaries" } }
+            },
+            {
+                $addFields: { reactions_count: { $size: "$reactions" } }
+            },
+            {
+                $addFields: { posts_count: { $size: "$posts" } }
+            },
+            {
+                $project: {
+                    'commentaries': 0,
+                    reactions: 0,
+                    posts: 0,
+                    email: 0,
+                    password: 0,
+                }
+            },
+            {
+                "$addFields": {
+                    "moviments": {
+                        $sum: ["$commentaries_count", "$reactions_count", "$posts_count"]
+                    }
+                }
+            },
+            {
+                $sort: {
+                    moviments: -1,
+                    _id: -1
+                }
+            },
+            {
+                '$facet': {
+                    data: [{ $limit: 10 }] // add projection here wish you re-shape the docs
+                }
+            }
+        ])
+
+    }
 
 
 }

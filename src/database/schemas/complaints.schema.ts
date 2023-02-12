@@ -4,29 +4,32 @@ import { HydratedDocument } from 'mongoose';
 import { Users } from './users.schema';
 import * as mongoose from 'mongoose';
 import { Posts } from './posts.schema';
+import { Commentaries } from './commentaries.schema';
 
-export type CommentariesDocument = HydratedDocument<Commentaries>;
+export type ComplaintsDocument = HydratedDocument<Complaints>;
 
 export class Reactions {
 
 }
 
 @Schema()
-export class Commentaries {
-    @Prop()
-    commentary: string;
-
-    @Prop({
-        type: mongoose.Schema.Types.ObjectId,
-        ref: Users.name
-    })
-    user_id: mongoose.Schema.Types.ObjectId;
-
+export class Complaints {
     @Prop({
         type: mongoose.Schema.Types.ObjectId,
         ref: Posts.name
     })
     post_id: mongoose.Schema.Types.ObjectId
+
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId
+    })
+    user_id: mongoose.Schema.Types.ObjectId;
+
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId,
+        ref: Commentaries.name
+    })
+    commentary_id: mongoose.Schema.Types.ObjectId
 
     @Prop()
     created_at: Date;
@@ -37,14 +40,12 @@ export class Commentaries {
     @Prop()
     deleted_at: Date;
 
-    @Prop({
-        type: mongoose.Schema.Types.ObjectId,
-        ref: Commentaries.name
-    })
-    answer_id: mongoose.Schema.Types.ObjectId
+    @Prop()
+    reviewed: boolean
 
     @Prop()
-    counter: number
+    reason: string
+
 }
 
-export const CommentariesSchema = SchemaFactory.createForClass(Commentaries);
+export const ComplaintsSchema = SchemaFactory.createForClass(Complaints);
