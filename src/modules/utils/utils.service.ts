@@ -190,6 +190,7 @@ export class UtilsService {
   }
 
   dateTimeZoneBrasil(): string {
-    return new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }) + ' GMT'
+    const date = new Date()
+    return date.toISOString()
   }
 }
