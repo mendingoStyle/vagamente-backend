@@ -4,6 +4,7 @@ import { join } from 'path'
 import { AppModule } from './app.module'
 import serve from 'express-static'
 import * as fs from 'fs'
+import { BadRequestException } from '@nestjs/common'
 require('dotenv').config()
 
 export async function appBuilder() {
@@ -14,7 +15,10 @@ export async function appBuilder() {
   };
 
   let appOptions = {};
-
+  const whitelist = [
+    'https://vagamente.com.br',
+    'https://www.vagamente.com.br',
+  ]
   if (process.env.APP_ENV === 'PRODUCTION') {
     httpsOptions.key = fs.readFileSync('./key.pem');
     httpsOptions.cert = fs.readFileSync('./cert2.pem');
@@ -22,22 +26,25 @@ export async function appBuilder() {
     appOptions = {
       httpsOptions
     }
-  }
+  } 
 
   const app = await NestFactory.create(AppModule, appOptions)
   app.enableCors({
-    "origin": [
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://192.168.100.10:3000',
-      'https://vagamente.com.br',
-      'https://www.vagamente.com.br',
-    ],
-    "methods": ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'options'],
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1 || !origin ) {
+        console.log("allowed cors for:", origin)
+        callback(null, true)
+      } else {
+        console.log("blocked cors for:", origin)
+        callback(new BadRequestException({
+          statusCode: 500,
+          message: 'Forbidden Origin, Cors Error',
+          error: 'Bad Request',
+        }), false)
+      }
+    },
+    "methods": ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
-    allowedHeaders: '*',
-    "preflightContinue": false,
-    "optionsSuccessStatus": 204,
   })
   app.use(json({ limit: '50mb' }))
   app.use('/public', serve(join(process.cwd(), 'public')))
