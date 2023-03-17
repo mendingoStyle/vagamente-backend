@@ -63,9 +63,9 @@ export class CommentariesRepository {
         let r: any = null
         let params = null
         if (!dto.answer_id)
-            params = this.utils.applyFilterAggregate({ ...query, answer_id: null })
+            params = this.utils.applyFilterAggregate({ ...query, answer_id: null, deleted_at: null })
         else {
-            params = this.utils.applyFilterAggregate({ ...query, post_id: null })
+            params = this.utils.applyFilterAggregate({ ...query, post_id: null, deleted_at: null })
         }
         r = this.commentariesModel.aggregate([
             params,
@@ -93,6 +93,7 @@ export class CommentariesRepository {
                     as: 'reacts',
                 },
             },
+      
             {
                 "$addFields": {
                     "user.password": {
