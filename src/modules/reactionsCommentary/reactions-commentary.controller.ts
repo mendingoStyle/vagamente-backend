@@ -1,22 +1,22 @@
 import { Body, Controller, Get, Post, Query, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
-import { GetReactions } from "./dto/reactions.get.dto";
-import { ReactionsService } from "./reactions-commentary.service";
+import { GetReactionsCommentary } from "./dto/reactions.get.dto";
 import { Reactions } from "database/schemas/posts.schema";
-import { CreateReaction } from "./dto/reactions.create.dto";
+import { CreateReactionCommentary } from "./dto/reactions-commentary.create.dto";
 import { LoggedUser } from "modules/utils/decorators/user.decorator";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 import { JwtAuthGuard } from "modules/auth/guard/jwt-auth.guard";
+import { ReactionsCommentaryService } from "./reactions-commentary.service";
 
 
-@Controller('reactions')
+@Controller('reactions-commentary')
 @UseGuards(JwtAuthGuard)
 @UsePipes(new ValidationPipe({ transform: true }))
-export class ReactionsController {
-    constructor(private readonly service: ReactionsService) { }
+export class ReactionsCommentaryController {
+    constructor(private readonly service: ReactionsCommentaryService) { }
 
     @Post()
     create(
-        @Body() dto: CreateReaction,
+        @Body() dto: CreateReactionCommentary,
         @LoggedUser() user: IAccessToken,
     ) {
         return this.service.create(dto, user.id)
@@ -24,7 +24,7 @@ export class ReactionsController {
 
     @Get()
     findOne(
-        @Query() dto: GetReactions
+        @Query() dto: GetReactionsCommentary
     ): Promise<Reactions[]> {
         return this.service.findAll(dto)
     }

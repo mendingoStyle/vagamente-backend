@@ -12,6 +12,7 @@ import { ReactionsModule } from 'modules/reactions/reactions.module';
 import { CommentariesModule } from 'modules/commentaries/commentaries.module';
 import { BadgesModule } from 'modules/badges/badges.module';
 import { ComplaintsModule } from 'modules/complaints/complaints.module';
+import { ReactionsCommentaryModule } from 'modules/reactionsCommentary/reactions-commentary.module';
 require('dotenv').config()
 
 @Module({
@@ -29,7 +30,8 @@ require('dotenv').config()
     ReactionsModule,
     CommentariesModule,
     BadgesModule,
-    ComplaintsModule
+    ComplaintsModule,
+    ReactionsCommentaryModule,
   ],
   controllers: [AppController],
 })

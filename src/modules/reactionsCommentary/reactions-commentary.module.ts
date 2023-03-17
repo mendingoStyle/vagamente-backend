@@ -1,28 +1,27 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose';
-import { ReactionsValidator } from './validators/reactions.validator';
-import { ReactionsRepository } from './reactions-commentary.repository';
-import { ReactionsController } from './reactions-commentary.controller';
-import { ReactionsService } from './reactions-commentary.service';
-import { CreateReactionsUseCase } from './useCases/reactions.create.usecase';
+import { ReactionsCommentaryValidator } from './validators/reactions-commentary.validator';
+import { ReactionsCommentaryController } from './reactions-commentary.controller';
+import { ReactionsCommentaryService } from './reactions-commentary.service';
+import { CreateReactionsUseCase } from './useCases/reactions-commentary.create.usecase';
 import { GetReactionsUseCase } from './useCases/reactions.get.usecase';
 import { Posts, PostsSchema, Reactions } from 'database/schemas/posts.schema';
-import { ReactionsSchema } from 'database/schemas/reactions.schema';
+import { ReactionsCommentaryRepository } from './reactions-commentary.repository';
+import { ReactionsCommentary, ReactionsCommentarySchema } from 'database/schemas/reactions_commentary.schema';
 
 
 @Module({
-    controllers: [ReactionsController],
+    controllers: [ReactionsCommentaryController],
     providers: [
-        ReactionsValidator,
-        ReactionsRepository,
-        ReactionsService,
+        ReactionsCommentaryValidator,
+        ReactionsCommentaryRepository,
+        ReactionsCommentaryService,
         CreateReactionsUseCase,
         GetReactionsUseCase
     ],
     imports: [
-        MongooseModule.forFeature([{ name: Reactions.name, schema: ReactionsSchema }]),
-        MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }]),
+        MongooseModule.forFeature([{ name: ReactionsCommentary.name, schema: ReactionsCommentarySchema }]),
     ],
-    exports: [ReactionsService],
+    exports: [ReactionsCommentaryService],
 })
 export class ReactionsCommentaryModule { }

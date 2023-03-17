@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseGuards, UsePipes, ValidationPipe, Headers } from "@nestjs/common";
 import { CommentariesService } from "./commentaries.service";
 import { CreateCommentary } from "./dto/commentaries.create.dto";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
@@ -23,8 +23,9 @@ export class CommentariesController {
     @Get()
     findAll(
         @Query() dto: GetCommentary,
+        @Headers('authorization') token: string,
     ): Promise<any> {
-        return this.service.findAll(dto)
+        return this.service.findAll(dto, token)
     }
 
 }

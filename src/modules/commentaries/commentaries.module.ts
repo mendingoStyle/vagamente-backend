@@ -7,6 +7,7 @@ import { CommentariesValidator } from './validators/commentaries.validator';
 import { CommentariesRepository } from './commentaries.repository';
 import { GetCommentariesUseCase } from './useCases/commentaries.get.usecase';
 import { CreateCommentariesUseCase } from './useCases/commentaries.create.usecase';
+import { TokenModule } from 'modules/token/tokenController.module';
 
 @Module({
     controllers: [CommentariesController],
@@ -19,6 +20,7 @@ import { CreateCommentariesUseCase } from './useCases/commentaries.create.usecas
     ],
     imports: [
         MongooseModule.forFeature([{ name: Commentaries.name, schema: CommentariesSchema }]),
+        TokenModule
     ],
     exports: [CommentariesService],
 })

@@ -1,19 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { GetReactionsCommentary } from "../dto/reactions.get.dto";
+import { CreateReactionCommentary } from "../dto/reactions-commentary.create.dto";
 import { ReactionsCommentaryValidator } from "../validators/reactions-commentary.validator";
 import { ReactionsCommentaryRepository } from "../reactions-commentary.repository";
 
 
-
-
 @Injectable()
-export class GetReactionsUseCase {
+export class CreateReactionsUseCase {
     constructor(
         private validator: ReactionsCommentaryValidator,
         private repository: ReactionsCommentaryRepository,
     ) { }
-    findAll(dto: GetReactionsCommentary) {
-        this.validator.findAllValidate(dto)
-        return this.repository.findAll(dto)
+    async create(reaction: CreateReactionCommentary, user_id: string) {
+        this.validator.validateToSave(reaction)
+        return this.repository.create(reaction, user_id)
     }
 }

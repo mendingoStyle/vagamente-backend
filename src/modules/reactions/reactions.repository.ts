@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Posts, PostsDocument, Reactions } from "database/schemas/posts.schema";
+import { Reactions } from "database/schemas/posts.schema";
 import { ReactionsDocument } from "database/schemas/reactions.schema";
 import { Model } from "mongoose";
 import { CreateReaction } from "./dto/reactions.create.dto";
@@ -11,8 +11,6 @@ import { GetReactions } from "./dto/reactions.get.dto";
 export class ReactionsRepository {
     constructor(
         @InjectModel(Reactions.name) private reactionsModel: Model<ReactionsDocument>,
-        @InjectModel(Posts.name) private postsModel: Model<PostsDocument>,
-
         private readonly utils: UtilsService
     ) { }
 

@@ -21,7 +21,6 @@ import { ReactionsSchema } from 'database/schemas/reactions.schema';
     ],
     imports: [
         MongooseModule.forFeature([{ name: Reactions.name, schema: ReactionsSchema }]),
-        MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }]),
     ],
     exports: [ReactionsService],
 })

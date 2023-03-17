@@ -38,4 +38,4 @@ export class ReactionsCommentary {
 
 }
 
-export const ReactionsSchema = SchemaFactory.createForClass(ReactionsCommentary);
+export const ReactionsCommentarySchema = SchemaFactory.createForClass(ReactionsCommentary);

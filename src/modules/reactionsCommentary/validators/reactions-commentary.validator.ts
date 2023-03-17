@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 
 @Injectable()
-export class ReactionsValidator {
+export class ReactionsCommentaryValidator {
     constructor(
     ) { }
     async validateToSave(reaction): Promise<any> {

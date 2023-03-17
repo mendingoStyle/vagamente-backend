@@ -4,6 +4,7 @@ import { GetCommentary } from "./dto/commentaries.get.dto";
 import { CreateCommentariesUseCase } from "./useCases/commentaries.create.usecase";
 import { GetCommentariesUseCase } from "./useCases/commentaries.get.usecase";
 import { Commentaries } from "database/schemas/commentaries.schema";
+import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 
 
 
@@ -16,7 +17,7 @@ export class CommentariesService {
     async create(body: CreateCommentary, userId: string): Promise<Commentaries> {
         return this.useCaseCreateCommentaries.create(body, userId)
     }
-    async findAll(dto: GetCommentary): Promise<any> {
-        return this.useCaseGetCommentaries.findAll(dto)
+    async findAll(dto: GetCommentary, token: string): Promise<any> {
+        return this.useCaseGetCommentaries.findAll(dto, token)
     }
 }

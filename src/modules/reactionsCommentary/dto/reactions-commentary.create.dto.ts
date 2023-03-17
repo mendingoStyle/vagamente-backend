@@ -2,7 +2,7 @@ import { IsNotEmpty } from "@nestjs/class-validator";
 import { ReactionsEnum } from "database/schemas/reactions.schema";
 import mongoose from "mongoose";
 
-export class CreateReaction {
+export class CreateReactionCommentary {
     _id: string
     
     @IsNotEmpty()

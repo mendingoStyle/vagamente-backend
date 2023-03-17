@@ -26,7 +26,9 @@ export async function appBuilder() {
     appOptions = {
       httpsOptions
     }
-  } 
+  } else {
+    whitelist.push('http://localhost:3000', undefined)
+  }
 
   const app = await NestFactory.create(AppModule, appOptions)
   app.enableCors({

@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { UtilsService } from "modules/utils/utils.service";
 import { Commentaries, CommentariesDocument } from "database/schemas/commentaries.schema";
 import { CreateCommentary } from "./dto/commentaries.create.dto";
 import { GetCommentary } from "./dto/commentaries.get.dto";
+import { ReactionsCommentary } from "database/schemas/reactions_commentary.schema";
 
 @Injectable()
 export class CommentariesRepository {
@@ -57,7 +58,7 @@ export class CommentariesRepository {
         return commentarieModel.save();
 
     }
-    async findAll(dto: GetCommentary) {
+    async findAll(dto: GetCommentary, userId: string) {
         const { page, limit, ...query } = dto
         let r: any = null
         let params = null
@@ -66,7 +67,6 @@ export class CommentariesRepository {
         else {
             params = this.utils.applyFilterAggregate({ ...query, post_id: null })
         }
-
         r = this.commentariesModel.aggregate([
             params,
             {
@@ -83,6 +83,14 @@ export class CommentariesRepository {
                     localField: '_id',
                     foreignField: 'answer_id',
                     as: 'answers',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'reactionscommentaries',
+                    localField: '_id',
+                    foreignField: 'commentary_id',
+                    as: 'reacts',
                 },
             },
             {
@@ -126,12 +134,87 @@ export class CommentariesRepository {
                 }
             },
             {
+                $addFields: {
+                    like: {
+                        $filter: {
+                            input: "$reacts",
+                            cond: {
+                                $and: [
+                                    { $eq: ["$$this.type", 'like'] },
+                                    {
+                                        $or: [
+                                            { "$eq": [{ "$type": "$$this.deleted_at" }, "missing"] },
+                                            { "$eq": [{ "$type": "$$this.deleted_at" }, "null"] },
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: { likes_count: { $size: "$like" } }
+            },
+            {
+                $addFields: {
+                    dislike: {
+                        $filter: {
+                            input: "$reacts",
+                            cond: {
+                                $and: [
+                                    { $eq: ["$$this.type", 'dislike'] },
+                                    {
+                                        $or: [
+                                            { "$eq": [{ "$type": "$$this.deleted_at" }, "missing"] },
+                                            { "$eq": [{ "$type": "$$this.deleted_at" }, "null"] },
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: { dislike_count: { $size: "$dislike" } }
+            },
+            {
                 $addFields: { answers_count: { $size: "$answers" } }
             },
 
             {
+                $addFields: {
+                    reacts: {
+                        $filter: {
+                            input: "$reacts",
+                            cond: {
+                                $or: [
+                                    {
+                                        $and: [
+                                            { $eq: ["$$this.user_id", new mongoose.Types.ObjectId(userId)] },
+                                            { $eq: ["$$this.deleted_at", null] },
+
+                                        ],
+                                    },
+                                    {
+                                        $and: [
+                                            { $eq: ["$$this.user_id", new mongoose.Types.ObjectId(userId)] },
+                                            { "$eq": [{ "$type": "$deleted_at" }, "missing"] }
+                                        ]
+                                    }
+                                ]
+
+                            }
+                        }
+                    }
+                }
+            },
+            {
                 $project: {
-                    answers: 0
+                    answers: 0,
+                    like: 0,
+                    dislike: 0,
                 }
             },
 
@@ -139,9 +222,7 @@ export class CommentariesRepository {
             {
                 '$facet': {
                     data: [{ $skip: (page - 1) * limit }, { $limit: limit },
-
-                    ], // add projection here wish you re-shape the docs,
-
+                    ],
                     totalCount: [
                         {
                             $count: 'count'
