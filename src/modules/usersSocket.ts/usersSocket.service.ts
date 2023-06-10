@@ -34,11 +34,7 @@ export class UsersSocketService {
     async findAll(dto: GetUsersSocket): Promise<UsersSocket[]> {
         return await this.usersSocket
             .find()
-            .where({
-                "$match": {
-                    ...dto
-                }
-            })
+            .where(dto)
             .exec()
     }
 
