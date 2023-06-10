@@ -8,10 +8,6 @@ import { Commentaries } from './commentaries.schema';
 
 export type ComplaintsDocument = HydratedDocument<Complaints>;
 
-export class Reactions {
-
-}
-
 @Schema()
 export class Complaints {
     @Prop({

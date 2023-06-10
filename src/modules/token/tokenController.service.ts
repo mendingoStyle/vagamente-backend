@@ -51,7 +51,7 @@ export class TokenService {
     }
   }
 
-  async verifyToken(token: string): Promise<IAccessToken> {
+  verifyToken(token: string): Promise<IAccessToken> {
     try {
       const decodedToken = this.jwtService.verify(token,
         { secret: this.config.get('SECRET_KEY') }
@@ -61,7 +61,7 @@ export class TokenService {
       if (error instanceof TokenExpiredError) {
         throw this.utils.throwForbiddenException('Token Expirou')
       }
-      this.utils.throwForbiddenException(
+      throw this.utils.throwForbiddenException(
         'Não autorizado'
       )
     }

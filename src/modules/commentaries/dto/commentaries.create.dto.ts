@@ -20,4 +20,6 @@ export class CreateCommentary {
     deleted_at: Date;
 
     counter: number
+
+    route_post_id?: string
 }

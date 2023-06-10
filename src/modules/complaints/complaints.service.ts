@@ -15,6 +15,5 @@ export class ComplaintsService {
     }
     findAll(dto: GetComplaint) {
         return this.useCaseGetComplaints.findAll(dto)
-
     }
 }

@@ -12,6 +12,8 @@ export class Reactions {
 
 @Schema()
 export class Posts {
+    _id: string
+
     @Prop()
     title: string;
 

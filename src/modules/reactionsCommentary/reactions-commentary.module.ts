@@ -8,6 +8,9 @@ import { GetReactionsUseCase } from './useCases/reactions.get.usecase';
 import { Posts, PostsSchema, Reactions } from 'database/schemas/posts.schema';
 import { ReactionsCommentaryRepository } from './reactions-commentary.repository';
 import { ReactionsCommentary, ReactionsCommentarySchema } from 'database/schemas/reactions_commentary.schema';
+import { NotificationsModule } from 'modules/notifications/notifications.module';
+import { UsersModule } from 'modules/users/users.module';
+import { CommentariesModule } from 'modules/commentaries/commentaries.module';
 
 
 @Module({
@@ -17,10 +20,14 @@ import { ReactionsCommentary, ReactionsCommentarySchema } from 'database/schemas
         ReactionsCommentaryRepository,
         ReactionsCommentaryService,
         CreateReactionsUseCase,
-        GetReactionsUseCase
+        GetReactionsUseCase,
+ 
     ],
     imports: [
         MongooseModule.forFeature([{ name: ReactionsCommentary.name, schema: ReactionsCommentarySchema }]),
+        NotificationsModule,
+        UsersModule,
+        CommentariesModule
     ],
     exports: [ReactionsCommentaryService],
 })

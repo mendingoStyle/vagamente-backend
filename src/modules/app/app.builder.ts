@@ -28,6 +28,8 @@ export async function appBuilder() {
     }
   } else {
     whitelist.push('http://localhost:3000', undefined)
+    whitelist.push('http://192.168.100.10:3000', undefined)
+
   }
 
   const app = await NestFactory.create(AppModule, appOptions)

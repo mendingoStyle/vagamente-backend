@@ -28,6 +28,6 @@ import { BadgesModule } from 'modules/badges/badges.module';
         TokenModule,
         BadgesModule
     ],
-    exports: [UsersService],
+    exports: [UsersService,UsersRepository  ],
 })
 export class UsersModule { }

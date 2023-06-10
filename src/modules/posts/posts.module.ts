@@ -28,6 +28,6 @@ import { EditPostUseCase } from './useCases/posts.edit.usecase';
         TagsModule,
         TokenModule
     ],
-    exports: [PostsService],
+    exports: [PostsService, PostsRepository],
 })
 export class PostsModule { }

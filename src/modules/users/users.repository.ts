@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Users, UsersDocument } from "database/schemas/users.schema";
-import mongoose, { Model } from "mongoose";
+import mongoose, { Model, ObjectId } from "mongoose";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
 import { UtilsService } from "modules/utils/utils.service";
 import { IUserValidateExists } from "modules/utils/dto/user.interface";
@@ -151,5 +151,8 @@ export class UsersRepository {
 
     }
 
+    async findOneById(id: string | ObjectId): Promise<Users> {
+        return this.usersModel.findById(id).select({'username': 1, 'avatar': 1 });
+    }
 
 }

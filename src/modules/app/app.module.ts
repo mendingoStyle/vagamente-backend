@@ -13,6 +13,9 @@ import { CommentariesModule } from 'modules/commentaries/commentaries.module';
 import { BadgesModule } from 'modules/badges/badges.module';
 import { ComplaintsModule } from 'modules/complaints/complaints.module';
 import { ReactionsCommentaryModule } from 'modules/reactionsCommentary/reactions-commentary.module';
+import { SocketModule } from 'modules/socket/socket.module';
+import { UsersSocketModule } from 'modules/usersSocket.ts/usersSocket.module';
+import { NotificationsModule } from 'modules/notifications/notifications.module';
 require('dotenv').config()
 
 @Module({
@@ -32,6 +35,9 @@ require('dotenv').config()
     BadgesModule,
     ComplaintsModule,
     ReactionsCommentaryModule,
+    SocketModule,
+    UsersSocketModule,
+    NotificationsModule
   ],
   controllers: [AppController],
 })

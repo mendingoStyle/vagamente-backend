@@ -43,6 +43,12 @@ export class Commentaries {
     })
     answer_id: mongoose.Schema.Types.ObjectId
 
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId,
+        ref: Posts.name
+    })
+    route_post_id: mongoose.Schema.Types.ObjectId
+
     @Prop()
     counter: number
 }

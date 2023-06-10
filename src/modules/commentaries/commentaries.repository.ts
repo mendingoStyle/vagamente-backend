@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import mongoose, { Model } from "mongoose";
+import mongoose, { Model, ObjectId } from "mongoose";
 import { UtilsService } from "modules/utils/utils.service";
 import { Commentaries, CommentariesDocument } from "database/schemas/commentaries.schema";
 import { CreateCommentary } from "./dto/commentaries.create.dto";
 import { GetCommentary } from "./dto/commentaries.get.dto";
 import { ReactionsCommentary } from "database/schemas/reactions_commentary.schema";
+import { Posts } from "database/schemas/posts.schema";
 
 @Injectable()
 export class CommentariesRepository {
@@ -14,7 +15,7 @@ export class CommentariesRepository {
         private readonly utils: UtilsService
     ) { }
 
-    async incrementFathers(body: CreateCommentary) {
+    async incrementFathers(body: CreateCommentary): Promise<Commentaries> {
         if (body.answer_id) {
             let answer = await this.commentariesModel.findByIdAndUpdate({
                 _id: body.answer_id
@@ -32,7 +33,7 @@ export class CommentariesRepository {
                     )
                 }
                 else {
-                    answer = null
+                    return answer
                 }
             }
         }
@@ -93,7 +94,7 @@ export class CommentariesRepository {
                     as: 'reacts',
                 },
             },
-      
+
             {
                 "$addFields": {
                     "user.password": {
@@ -239,6 +240,9 @@ export class CommentariesRepository {
             data: result?.data
 
         }
+    }
+    async findByid(id: ObjectId | string): Promise<Commentaries> {
+        return this.commentariesModel.findById(id)
     }
 
 }

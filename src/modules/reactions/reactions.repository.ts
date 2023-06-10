@@ -15,6 +15,7 @@ export class ReactionsRepository {
     ) { }
 
     async create(react: CreateReaction, user_id: string) {
+            
         return await this.reactionsModel.findOneAndUpdate(
             { post_id: react.post_id, user_id: user_id },
             { ...react, created_at: new Date(this.utils.dateTimeZoneBrasil()), updated_at: new Date(this.utils.dateTimeZoneBrasil()) },

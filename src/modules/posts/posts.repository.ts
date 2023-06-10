@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Posts, PostsDocument } from "database/schemas/posts.schema";
-import mongoose, { Model } from "mongoose";
+import mongoose, { Model, ObjectId } from "mongoose";
 import { CreatePost } from "./dto/posts.create.dto";
 import { GetPost } from "./dto/posts.get.dto";
 import { UtilsService } from "modules/utils/utils.service";
@@ -338,5 +338,9 @@ export class PostsRepository {
         return {
             message: 'ok'
         }
+    }
+
+    async findByid(id: ObjectId | string): Promise<Posts> {
+        return this.postsModel.findById(id)
     }
 }
