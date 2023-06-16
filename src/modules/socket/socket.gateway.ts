@@ -1,6 +1,6 @@
 import { Injectable, UseGuards } from "@nestjs/common";
 import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { UsersSocketService } from "modules/usersSocket.ts/usersSocket.service";
+import { UsersSocketService } from "modules/usersSocket/usersSocket.service";
 import { Server, Socket } from 'socket.io';
 import { SendNotificationsDto } from "./dto/send.notifications.dto";
 import { Notifications } from "database/schemas/notifications.schema";
@@ -21,7 +21,6 @@ export class SocketGateway implements OnGatewayConnection {
     constructor(
         private usersSocketService: UsersSocketService,
         private readonly tokenService: TokenService,
-        private readonly utils: UtilsService
     ) {
 
     }
@@ -45,9 +44,14 @@ export class SocketGateway implements OnGatewayConnection {
     async sendNotifications(notifications: SendNotificationsDto) {
         const usersId = await this.usersSocketService.findAll({ user_id: notifications.to_user_id })
         if (usersId && usersId.length > 0) {
-            this.server
-                .to(usersId.map(user => user.socket_id))
-                .emit('notifications', notifications);
+            if (notifications.type === 'notification')
+                this.server
+                    .to(usersId.map(user => user.socket_id))
+                    .emit('notifications', notifications);
+            if (notifications.type === 'friendRequest')
+                this.server
+                    .to(usersId.map(user => user.socket_id))
+                    .emit('friendship', notifications);
         }
     }
     /*

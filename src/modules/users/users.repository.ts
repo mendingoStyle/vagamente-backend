@@ -7,6 +7,7 @@ import { UtilsService } from "modules/utils/utils.service";
 import { IUserValidateExists } from "modules/utils/dto/user.interface";
 import { Badges, BadgesDocument } from "database/schemas/badges.schema";
 import { BadgesService } from "modules/badges/badges.service";
+import { GetUser, GetUserSearch } from "./dto/users.get.dto";
 
 
 @Injectable()
@@ -152,7 +153,80 @@ export class UsersRepository {
     }
 
     async findOneById(id: string | ObjectId): Promise<Users> {
-        return this.usersModel.findById(id).select({'username': 1, 'avatar': 1 });
+        return this.usersModel.findById(id).select({ 'username': 1, 'avatar': 1 });
+    }
+
+    async find(dto: GetUserSearch) {
+        const { page, limit, search, ...query } = dto
+        let searchQuery = undefined
+        let r: any = null
+        let params = null
+
+        params = this.utils.applyFilterAggregate({ ...query, deleted_at: null })
+        if (search) {
+            searchQuery = {
+                "$match": {
+                    "$or": [
+                        {
+                            username: { $regex: '.*' + search + '.*', $options: 'i' }
+                        },
+                        {
+                            email: { $regex: '.*' + search + '.*', $options: 'i' }
+                        }
+                    ]
+                }
+            }
+        }
+
+        r = this.usersModel.aggregate([
+            { ...params, ...searchQuery },
+            {
+                "$addFields": {
+                    "user.password": {
+                        "$cond": [
+                            { "$eq": [true, true] },
+                            "$$REMOVE",
+                            0
+                        ]
+                    }
+                }
+            },
+            {
+                "$addFields": {
+                    "user": {
+                        "$cond": [
+                            {
+                                $or: [
+                                    { "$eq": [{ "$type": "$deleted_at" }, "missing"] },
+                                    { "$eq": [{ "$type": "$deleted_at" }, "null"] },
+                                ]
+                            },
+                            "$user",
+                            "$$REMOVE",
+                        ]
+                    },
+                }
+            },
+            { $sort: { _id: -1 } },
+            {
+                '$facet': {
+                    data: [{ $skip: (page - 1) * limit }, { $limit: limit },
+                    ],
+                    totalCount: [
+                        {
+                            $count: 'count'
+                        }
+                    ]
+
+                }
+            }
+        ])
+        const result = (await r.exec())[0]
+        return {
+            total: result?.totalCount[0]?.count,
+            data: result?.data
+
+        }
     }
 
 }

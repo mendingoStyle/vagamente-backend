@@ -9,7 +9,6 @@ export enum NotificationsEnum {
     notification = 'notification',
     message = 'message',
     friendRequest = 'friendRequest'
-
 }
 
 @Schema()
@@ -41,10 +40,9 @@ export class Notifications {
         type: mongoose.Schema.Types.ObjectId
     })
     from_user_id: mongoose.Schema.Types.ObjectId;
-    
+
     @Prop()
     type: NotificationsEnum
-
 }
 
 export const NotificationsSchema = SchemaFactory.createForClass(Notifications);

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
-import { GetUser } from "./dto/users.get.dto";
+import { GetUser, GetUserSearch } from "./dto/users.get.dto";
 import { CreateUserUseCase } from "./useCases/users.create.usecase";
 import { GetUserUseCase } from "./useCases/users.get.usecase";
 import { Users } from "database/schemas/users.schema";
@@ -52,6 +52,10 @@ export class UsersService {
 
     topUsers() {
         return this.useCaseGetUser.topUsers()
+    }
+
+    async find(dto: GetUserSearch) {
+        return this.useCaseGetUser.find(dto)
     }
 
 

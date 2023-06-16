@@ -2,10 +2,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Users } from './users.schema';
-import { Badges } from './badges.schema';
 
 export type UsersFriendsDocument = HydratedDocument<UsersFriends>;
-export enum NotificationsEnum {
+export enum UsersFriendEnum {
     waiting = 'waiting',
     accepted = 'accepted',
     decline = 'decline'
@@ -25,7 +24,7 @@ export class UsersFriends {
     friend_id: mongoose.Schema.Types.ObjectId
 
     @Prop()
-    status: NotificationsEnum
+    status: UsersFriendEnum
 
     @Prop()
     created_at: Date;

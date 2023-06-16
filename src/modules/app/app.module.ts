@@ -14,8 +14,9 @@ import { BadgesModule } from 'modules/badges/badges.module';
 import { ComplaintsModule } from 'modules/complaints/complaints.module';
 import { ReactionsCommentaryModule } from 'modules/reactionsCommentary/reactions-commentary.module';
 import { SocketModule } from 'modules/socket/socket.module';
-import { UsersSocketModule } from 'modules/usersSocket.ts/usersSocket.module';
+import { UsersSocketModule } from 'modules/usersSocket/usersSocket.module';
 import { NotificationsModule } from 'modules/notifications/notifications.module';
+import { UsersFriendsModule } from 'modules/usersFriends/usersFriends.module';
 require('dotenv').config()
 
 @Module({
@@ -37,7 +38,8 @@ require('dotenv').config()
     ReactionsCommentaryModule,
     SocketModule,
     UsersSocketModule,
-    NotificationsModule
+    NotificationsModule,
+    UsersFriendsModule
   ],
   controllers: [AppController],
 })

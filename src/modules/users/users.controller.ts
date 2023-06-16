@@ -7,6 +7,7 @@ import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 import { ForgetPasswordPayloadDto } from "modules/token/dto/forgetPassword.dto";
 import { UserChangePasswordDTO } from "./dto/recovery-password.dto";
 import { JwtAuthGuard } from "modules/auth/guard/jwt-auth.guard";
+import { GetUserSearch } from "./dto/users.get.dto";
 
 
 @Controller('users')
@@ -86,5 +87,14 @@ export class UsersController {
     topUsers() {
         return this.service.topUsers()
     }
+    
+    @UsePipes(new ValidationPipe({ transform: true }))
+    @Get('find-users')
+    find(
+        @Query() dto: GetUserSearch
+    ) {
+        return this.service.find(dto)
+    }
+
 
 }

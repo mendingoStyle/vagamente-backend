@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { GetUser } from "../dto/users.get.dto";
+import { GetUser, GetUserSearch } from "../dto/users.get.dto";
 import { UsersValidator } from "../validators/users.validator";
 import { UsersRepository } from "../users.repository";
 import { TokenService } from "modules/token/tokenController.service";
@@ -44,6 +44,9 @@ export class GetUserUseCase {
     }
     topUsers() {
         return this.repository.topUsers()
+    }
+    async find(dto: GetUserSearch){
+        return this.repository.find(dto)
     }
 
 }

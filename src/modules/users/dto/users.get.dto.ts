@@ -21,3 +21,28 @@ export class GetUser extends PaginationPayloadDto {
 
     deleted_at?: Date;
 }
+
+export class GetUserSearch extends PaginationPayloadDto {
+    _id?: string;
+
+    name?: string;
+
+    birth_date?: Date;
+
+    password?: Date;
+
+    email?: string;
+
+    avatar?: string;
+
+    username?: string;
+
+    created_at?: Date;
+
+    updated_at?: Date;
+
+    deleted_at?: Date;
+
+    search?: string
+}
+
