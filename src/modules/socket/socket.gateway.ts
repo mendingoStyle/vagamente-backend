@@ -48,10 +48,16 @@ export class SocketGateway implements OnGatewayConnection {
                 this.server
                     .to(usersId.map(user => user.socket_id))
                     .emit('notifications', notifications);
-            if (notifications.type === 'friendRequest')
-                this.server
-                    .to(usersId.map(user => user.socket_id))
-                    .emit('friendship', notifications);
+        }
+    }
+
+    async sendFriendNotifications(notifications: SendNotificationsDto) {
+        const usersId = await this.usersSocketService.findAll({ user_id: notifications.to_user_id })
+
+        if (usersId && usersId.length > 0) {
+            this.server
+                .to(usersId.map(user => user.socket_id))
+                .emit('friendship', notifications);
         }
     }
     /*

@@ -7,7 +7,8 @@ export type UsersFriendsDocument = HydratedDocument<UsersFriends>;
 export enum UsersFriendEnum {
     waiting = 'waiting',
     accepted = 'accepted',
-    decline = 'decline'
+    decline = 'decline',
+    read = 'read'
 }
 @Schema()
 export class UsersFriends {

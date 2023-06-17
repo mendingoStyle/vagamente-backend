@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { UsersFriendEnum, UsersFriends, UsersFriendsDocument } from "database/schemas/users_friends.schema";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { CreateUsersFriends } from "./dto/usersFriends.create.dto";
 import { UtilsService } from "modules/utils/utils.service";
 import { GetUsersFriends } from "./dto/usersFriends.get.dto";
 import { UsersRepository } from "modules/users/users.repository";
-import { NotificationsService } from "modules/notifications/notifications.service";
 import { NotificationsEnum } from "database/schemas/notifications.schema";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
+import { SocketGateway } from "modules/socket/socket.gateway";
 
 @Injectable()
 export class UsersFriendsService {
@@ -16,26 +16,75 @@ export class UsersFriendsService {
         @InjectModel(UsersFriends.name) private usersFriendsModel: Model<UsersFriendsDocument>,
         private readonly utils: UtilsService,
         private userRepository: UsersRepository,
-        private notificationsService: NotificationsService,
+        private sockerGateway: SocketGateway,
     ) { }
 
-    async create(body: CreateUsersFriends) {
-        const usersFriendsRequest = await this.usersFriendsModel.findOneAndUpdate(
-            { user_id: body.user_id, friend_id: body.friend_id },
-            { ...body, created_at: new Date(this.utils.dateTimeZoneBrasil()), updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
-            { upsert: true, new: true });
+    async sendFriendRequest(body: CreateUsersFriends) {
+        const existsFriendRequest = await this.usersFriendsModel.findOne(
+            {
+                $or: [
+                    {
+                        friend_id: body.friend_id,
+                        user_id: body.user_id      
+                    },
+                    {
+                        friend_id: body.user_id,
+                        user_id: body.friend_id
+                    }
+                ]
+            }
+        );
+
+        if (existsFriendRequest) {
+            return existsFriendRequest;
+        }
+
+        const usersFriendsRequest = await this.usersFriendsModel
+            .findOneAndUpdate(
+                { user_id: body.user_id, friend_id: body.friend_id },
+                { ...body, created_at: new Date(this.utils.dateTimeZoneBrasil()), updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
+                { upsert: true, new: true }
+            );
+        
         if (usersFriendsRequest._id && usersFriendsRequest.status === UsersFriendEnum.waiting) {
-            await this.notificationsService.create({
+            const user = await this.userRepository.findOneById(body.user_id);
+            this.sockerGateway.sendFriendNotifications({ 
+                user,
+                from_user_id: body.user_id,
+                to_user_id: body.friend_id,
                 created_at: new Date(),
                 updated_at: new Date(),
                 deleted_at: null,
                 title: 'enviou uma solicitação de amizade',
-                url: process.env.FRONT_URL + 'post/',
+                url: `${process.env.FRONT_URL}perfil/${user.username}`,
                 isRead: false,
-                to_user_id: usersFriendsRequest.friend_id,
-                from_user_id: usersFriendsRequest.user_id,
                 type: NotificationsEnum.friendRequest
-            }, await this.userRepository.findOneById(usersFriendsRequest.friend_id))
+            });
+        }
+    }
+
+    async answerFriendRequest(body: CreateUsersFriends) {
+        const usersFriendsRequest = await this.usersFriendsModel
+            .findOneAndUpdate(
+                { friend_id: body.user_id, user_id: body.friend_id },
+                { ...body, updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
+                { upsert: true }
+            );
+
+        if (usersFriendsRequest._id && usersFriendsRequest.status === UsersFriendEnum.accepted) {
+            const user = await this.userRepository.findOneById(body.user_id);
+            this.sockerGateway.sendFriendNotifications({ 
+                user,
+                from_user_id: body.user_id,
+                to_user_id: body.friend_id,
+                created_at: new Date(),
+                updated_at: new Date(),
+                deleted_at: null,
+                title: 'aceitou a sua solicitação de amizade.',
+                url: `${process.env.FRONT_URL}perfil/${user.username}`,
+                isRead: false,
+                type: NotificationsEnum.friendRequest
+            });
         }
     }
 
@@ -44,18 +93,15 @@ export class UsersFriendsService {
         let r: any = null
         let params = null
 
-
-
-        params = this.utils.applyFilterAggregate({ ...query, deleted_at: null })
+        params = this.utils.applyFilterAggregate({ ...query, friend_id: new mongoose.Types.ObjectId(user.id) })
 
         r = this.usersFriendsModel.aggregate([
             {
                 ...params,
-                "$match": {
-                    $or: [
-                        { friend_id: user.id },
-                        { user_id: user.id },
-                    ]
+                $match: {
+                    status: {
+                        '$ne': UsersFriendEnum.decline
+                    }
                 }
             },
             {
@@ -107,11 +153,31 @@ export class UsersFriendsService {
                 }
             }
         ])
+
         const result = (await r.exec())[0]
+
         return {
             total: result?.totalCount[0]?.count,
-            data: result?.data
+            pending: result?.data.find(item => item.status === UsersFriendEnum.waiting), 
+            data: result?.data.map(item => {
+                const [ user ] = item.user;
 
+                return {
+                    ...item,
+                    from_user: user,
+                    user: undefined,
+                    title: this.getFriendNotificationTitle(item.status)
+                }
+            })
+        }
+    }
+
+    getFriendNotificationTitle(status: UsersFriendEnum) {
+        if (status === UsersFriendEnum.waiting) {
+           return 'enviou uma solicitação de amizade.' 
+        }
+        if (status === UsersFriendEnum.accepted) {
+           return 'agora é seu amigo.' 
         }
     }
 
