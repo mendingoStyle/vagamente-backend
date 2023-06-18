@@ -64,14 +64,37 @@ export class UsersFriendsService {
     }
 
     async answerFriendRequest(body: CreateUsersFriends) {
+        const existsFriendRequest = await this.usersFriendsModel.findOne(
+            {
+                $or: [
+                    {
+                        friend_id: body.friend_id,
+                        user_id: body.user_id      
+                    },
+                    {
+                        friend_id: body.user_id,
+                        user_id: body.friend_id
+                    }
+                ]
+            }
+        );
+
+        if (existsFriendRequest.status !== UsersFriendEnum.waiting) {
+            return existsFriendRequest;
+        }
+
         const usersFriendsRequest = await this.usersFriendsModel
             .findOneAndUpdate(
                 { friend_id: body.user_id, user_id: body.friend_id },
                 { ...body, updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
                 { upsert: true }
             );
-
-        if (usersFriendsRequest._id && usersFriendsRequest.status === UsersFriendEnum.accepted) {
+        
+        if (
+            usersFriendsRequest._id 
+            && body.status === UsersFriendEnum.accepted 
+            && usersFriendsRequest.status === UsersFriendEnum.waiting
+        ) {
             const user = await this.userRepository.findOneById(body.user_id);
             this.sockerGateway.sendFriendNotifications({ 
                 user,
@@ -94,16 +117,14 @@ export class UsersFriendsService {
         let params = null
 
         params = this.utils.applyFilterAggregate({ ...query, friend_id: new mongoose.Types.ObjectId(user.id) })
-
+        params.$match = {
+            ...params.$match,
+            status: {
+                '$ne': UsersFriendEnum.decline
+            }
+        }
         r = this.usersFriendsModel.aggregate([
-            {
-                ...params,
-                $match: {
-                    status: {
-                        '$ne': UsersFriendEnum.decline
-                    }
-                }
-            },
+            params,
             {
                 $lookup: {
                     from: 'users',

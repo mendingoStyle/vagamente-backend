@@ -1,5 +1,5 @@
 import { IsNotEmpty } from "class-validator";
-import { NotificationsEnum } from "database/schemas/notifications.schema";
+import { UsersFriendEnum } from "database/schemas/users_friends.schema";
 
 export class CreateUsersFriends {
     user_id: string
@@ -8,7 +8,7 @@ export class CreateUsersFriends {
     friend_id: string
 
     @IsNotEmpty()
-    status: NotificationsEnum
+    status: UsersFriendEnum
 
     created_at: Date;
 

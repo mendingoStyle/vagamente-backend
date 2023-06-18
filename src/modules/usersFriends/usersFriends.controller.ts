@@ -22,13 +22,13 @@ export class UsersFriendsController {
         return this.service.sendFriendRequest({ ...dto, user_id: user.id })
     }
 
-    @Post()
+    @Post('answer')
     answerFriendRequest(
         @Body() dto: CreateUsersFriends,
         @LoggedUser() user: IAccessToken,
         
     ) {
-        return this.service.answerFriendRequest({ ...dto, friend_id: user.id })
+        return this.service.answerFriendRequest({ ...dto, user_id: user.id })
     }
 
     @Get()
