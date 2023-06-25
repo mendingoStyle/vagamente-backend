@@ -18,8 +18,8 @@ export class UsersService {
     async create(body: CreateUser) {
         return this.useCaseCreateUser.create(body)
     }
-    async patch(body: EditUser, file: Express.Multer.File, userId: string) {
-        return this.useCaseEditUser.patch(body, file, userId)
+    async patch(body: EditUser, file: Express.Multer.File, userId: string, file_cape: Express.Multer.File) {
+        return this.useCaseEditUser.patch(body, file, userId,file_cape)
     }
     async findAll(dto: GetUser) {
         return this.useCaseGetUser.findAll(dto)

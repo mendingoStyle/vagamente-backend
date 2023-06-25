@@ -44,6 +44,13 @@ export class Users {
 
     @Prop()
     firstLogin: boolean
+
+    @Prop()
+    biography: string
+
+    @Prop()
+    cape: string;
+
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

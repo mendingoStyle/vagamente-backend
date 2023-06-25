@@ -14,6 +14,10 @@ export class CreateUser {
 
     avatar: string;
 
+    cape: string;
+
+    biography: string
+
     @IsNotEmpty()
     username: string;
 
@@ -49,6 +53,11 @@ export class EditUser {
     deleted_at?: Date;
 
     firstLogin?: boolean
+
+    cape?: string
+
+    biography?: string
+
 
 }
 

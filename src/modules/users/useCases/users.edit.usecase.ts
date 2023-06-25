@@ -25,7 +25,7 @@ export class EditUserUseCase {
         private config: ConfigService,
         private readonly sendEmailService: EmailSenderSevice
     ) { }
-    async patch(body: EditUser, file: Express.Multer.File, userId: string) {
+    async patch(body: EditUser, file: Express.Multer.File, userId: string, file_cape: Express.Multer.File) {
         this.validator.validateToEdit(body)
         if (body.username) {
             const verify = await this.repository.findOneByEmailOrUsername({ username: body.username }, userId)
@@ -35,10 +35,14 @@ export class EditUserUseCase {
                 }
             }
         }
-
         if (!body.avatar && file) {
             body.avatar = (await this.uploadService.create(file))?.secure_url
         }
+
+        if (!body.cape && file_cape) {
+            body.cape = (await this.uploadService.create(file_cape))?.secure_url
+        }
+        
         body._id = userId
         if (body.password) {
             const user = (await this.repository.findAll({ _id: body._id }))[0]

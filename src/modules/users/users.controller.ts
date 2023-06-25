@@ -39,10 +39,21 @@ export class UsersController {
                 errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
                 fileIsRequired: false
             })) file: Express.Multer.File,
+        @UploadedFile(new ParseFilePipeBuilder()
+            .addFileTypeValidator({
+                fileType: '^.*\.(jpg|JPG|gif|png|mp4|jpeg|JPEG|webp)$',
+            })
+            .addMaxSizeValidator({
+                maxSize: 10000000
+            })
+            .build({
+                errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+                fileIsRequired: false
+            })) file_cape: Express.Multer.File,
         @Body() dto: EditUser,
         @LoggedUser() user: IAccessToken,
     ) {
-        return this.service.patch(dto, file, user.id)
+        return this.service.patch(dto, file, user.id, file_cape)
     }
 
     @UsePipes(new ValidationPipe({ transform: true }))
@@ -87,7 +98,7 @@ export class UsersController {
     topUsers() {
         return this.service.topUsers()
     }
-    
+
     @UsePipes(new ValidationPipe({ transform: true }))
     @Get('find-users')
     find(
