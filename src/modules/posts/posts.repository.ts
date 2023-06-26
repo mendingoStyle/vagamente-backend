@@ -18,6 +18,7 @@ export class PostsRepository {
         return postModel.save();
     }
     defaultGet(userId: string) {
+      
         return [
             {
                 $lookup: {
@@ -44,6 +45,7 @@ export class PostsRepository {
                     as: 'commentaries',
                 },
             },
+   
             {
                 $addFields: {
                     like: {

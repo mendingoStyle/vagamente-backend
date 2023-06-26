@@ -81,7 +81,7 @@ export class AuthService {
     }
     if (userExists.firstLogin) {
       const firstLogin = await this.badgesService.findFirstBadge()
-      this.usersService.patch({ firstLogin: false }, undefined, userExists._id)
+      this.usersService.patch({ firstLogin: false }, undefined, userExists._id, undefined)
       return {
         firstLogin,
         ...r

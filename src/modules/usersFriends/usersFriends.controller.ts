@@ -38,4 +38,14 @@ export class UsersFriendsController {
     ) {
         return this.service.findAll(dto, user)
     }
+
+    @Get('verify')
+    findIsFriend(
+        @Query() dto: GetUsersFriends,
+        @LoggedUser() user: IAccessToken,
+    ) {
+        console.log('check')
+        return this.service.findVerifyFriendShip(dto, user)
+    }
+
 }

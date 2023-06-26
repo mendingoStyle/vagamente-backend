@@ -25,7 +25,7 @@ export class UsersFriendsService {
                 $or: [
                     {
                         friend_id: body.friend_id,
-                        user_id: body.user_id      
+                        user_id: body.user_id
                     },
                     {
                         friend_id: body.user_id,
@@ -45,10 +45,10 @@ export class UsersFriendsService {
                 { ...body, created_at: new Date(this.utils.dateTimeZoneBrasil()), updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
                 { upsert: true, new: true }
             );
-        
+
         if (usersFriendsRequest._id && usersFriendsRequest.status === UsersFriendEnum.waiting) {
             const user = await this.userRepository.findOneById(body.user_id);
-            this.sockerGateway.sendFriendNotifications({ 
+            this.sockerGateway.sendFriendNotifications({
                 user,
                 from_user_id: body.user_id,
                 to_user_id: body.friend_id,
@@ -69,7 +69,7 @@ export class UsersFriendsService {
                 $or: [
                     {
                         friend_id: body.friend_id,
-                        user_id: body.user_id      
+                        user_id: body.user_id
                     },
                     {
                         friend_id: body.user_id,
@@ -89,14 +89,14 @@ export class UsersFriendsService {
                 { ...body, updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
                 { upsert: true }
             );
-        
+
         if (
-            usersFriendsRequest._id 
-            && body.status === UsersFriendEnum.accepted 
+            usersFriendsRequest._id
+            && body.status === UsersFriendEnum.accepted
             && usersFriendsRequest.status === UsersFriendEnum.waiting
         ) {
             const user = await this.userRepository.findOneById(body.user_id);
-            this.sockerGateway.sendFriendNotifications({ 
+            this.sockerGateway.sendFriendNotifications({
                 user,
                 from_user_id: body.user_id,
                 to_user_id: body.friend_id,
@@ -179,9 +179,9 @@ export class UsersFriendsService {
 
         return {
             total: result?.totalCount[0]?.count,
-            pending: result?.data.find(item => item.status === UsersFriendEnum.waiting), 
+            pending: result?.data.find(item => item.status === UsersFriendEnum.waiting),
             data: result?.data.map(item => {
-                const [ user ] = item.user;
+                const [user] = item.user;
 
                 return {
                     ...item,
@@ -195,10 +195,100 @@ export class UsersFriendsService {
 
     getFriendNotificationTitle(status: UsersFriendEnum) {
         if (status === UsersFriendEnum.waiting) {
-           return 'enviou uma solicitação de amizade.' 
+            return 'enviou uma solicitação de amizade.'
         }
         if (status === UsersFriendEnum.accepted) {
-           return 'agora é seu amigo.' 
+            return 'agora é seu amigo.'
+        }
+    }
+
+    async findVerifyFriendShip(dto: GetUsersFriends, user: IAccessToken) {
+        const { page, limit, ...query } = dto
+        let r: any = null
+        let params = null
+
+        console.log(query)
+        r = this.usersFriendsModel.aggregate([
+            {
+                $match:
+                {
+                    $expr:
+                    {
+                        $or: [
+                            {
+                                $and:
+                                    [
+                                        { $eq: ["$user_id", new mongoose.Types.ObjectId(user.id)] },
+                                        { $eq: ["$friend_id", new mongoose.Types.ObjectId(dto.friend_id)] }
+
+                                    ],
+                            },
+                            {
+                                $and:
+                                    [
+                                        { $eq: ["$friend_id", new mongoose.Types.ObjectId(user.id)] },
+                                        { $eq: ["$user_id", new mongoose.Types.ObjectId(dto.friend_id)] }
+
+                                    ]
+                            }
+                        ],
+
+
+                    }
+                }
+            },
+
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { user_friend: new mongoose.Types.ObjectId(dto.friend_id) },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                    { $eq: ["$_id", new mongoose.Types.ObjectId(dto.friend_id)] }
+
+                            }
+                        },
+                    ],
+                    as: "user"
+                },
+            },
+            {
+                "$addFields": {
+                    "user.password": {
+                        "$cond": [
+                            { "$eq": [true, true] },
+                            "$$REMOVE",
+                            0
+                        ]
+                    }
+                }
+            },
+            {
+                "$addFields": {
+                    "user": {
+                        "$cond": [
+                            {
+                                $or: [
+                                    { "$eq": [{ "$type": "$deleted_at" }, "missing"] },
+                                    { "$eq": [{ "$type": "$deleted_at" }, "null"] },
+                                ]
+                            },
+                            "$user",
+                            "$$REMOVE",
+                        ]
+                    },
+                }
+            },
+
+        ])
+
+        const result = (await r.exec())[0]
+
+        return {
+            ...result
         }
     }
 
