@@ -1,6 +1,8 @@
-import { Prop, Schema } from "@nestjs/mongoose";
-import mongoose from "mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 import { UsersFriends } from "./users_friends.schema";
+
+export type MessagesDocument = HydratedDocument<Messages>;
 
 @Schema()
 export class Messages {
@@ -26,3 +28,4 @@ export class Messages {
     isRead?: boolean
 
 }
+export const MessagesSchema = SchemaFactory.createForClass(Messages);

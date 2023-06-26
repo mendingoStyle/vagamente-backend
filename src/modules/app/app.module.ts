@@ -17,6 +17,7 @@ import { SocketModule } from 'modules/socket/socket.module';
 import { UsersSocketModule } from 'modules/usersSocket/usersSocket.module';
 import { NotificationsModule } from 'modules/notifications/notifications.module';
 import { UsersFriendsModule } from 'modules/usersFriends/usersFriends.module';
+import { MessagesModule } from 'modules/messages/messages.module';
 require('dotenv').config()
 
 @Module({
@@ -39,7 +40,8 @@ require('dotenv').config()
     SocketModule,
     UsersSocketModule,
     NotificationsModule,
-    UsersFriendsModule
+    UsersFriendsModule,
+    MessagesModule
   ],
   controllers: [AppController],
 })
