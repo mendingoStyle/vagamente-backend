@@ -182,7 +182,7 @@ export class UsersRepository {
             { ...params, ...searchQuery },
             {
                 "$addFields": {
-                    "user.password": {
+                    "password": {
                         "$cond": [
                             { "$eq": [true, true] },
                             "$$REMOVE",
@@ -229,4 +229,21 @@ export class UsersRepository {
         }
     }
 
+    async findById(dto: GetUserSearch, userId: string): Promise<Users|any>{
+        const user = await this.usersModel.findById(dto._id).select({
+            'username': 1,
+            'avatar': 1,
+            'biography': 1,
+            '_id': 1
+        });
+
+        if (user) {
+            return {
+                user:user,
+                myself: userId === user._id.toString()
+            }
+        }
+
+        return null;
+    }
 }

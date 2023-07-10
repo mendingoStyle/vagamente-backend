@@ -107,5 +107,13 @@ export class UsersController {
         return this.service.find(dto)
     }
 
+    @UsePipes(new ValidationPipe({ transform: true }))
+    @Get('by-id')
+    findById(
+        @Query() dto: GetUserSearch,
+        @Headers('authorization') token: string,
+    ) {
+        return this.service.findById(dto, token)
+    }
 
 }

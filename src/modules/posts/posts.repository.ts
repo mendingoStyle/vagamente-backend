@@ -91,7 +91,6 @@ export class PostsRepository {
             {
                 $addFields: { comentary_count: { $sum: ["$counter_sons", "$comentary_count_aux"] } }
             },
-
             {
                 $addFields: {
                     reacts: {

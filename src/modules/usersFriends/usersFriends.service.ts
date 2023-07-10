@@ -111,12 +111,15 @@ export class UsersFriendsService {
         }
     }
 
-    async findAll(dto: GetUsersFriends, user: IAccessToken) {
+    async findAllRequests(dto: GetUsersFriends, user: IAccessToken) {
         const { page, limit, ...query } = dto
         let r: any = null
         let params = null
 
-        params = this.utils.applyFilterAggregate({ ...query, friend_id: new mongoose.Types.ObjectId(user.id) })
+        params = this.utils.applyFilterAggregate({
+            ...query,
+            friend_id: new mongoose.Types.ObjectId(user.id)
+        })
         params.$match = {
             ...params.$match,
             status: {
@@ -193,6 +196,122 @@ export class UsersFriendsService {
         }
     }
 
+    async findAll(dto: GetUsersFriends, user: IAccessToken) {
+        let { page, limit, ...query } = dto
+        let r: any = null
+        let params = null
+        limit = 9999
+
+        let userId = user.id;
+
+        if (!!dto.friend_id) {
+            userId = dto.friend_id;
+        } 
+
+        params = this.utils.applyFilterAggregate({
+            ...query,
+        })
+        params.$match = {
+            ...params.$match,
+            status: {
+                '$eq': UsersFriendEnum.accepted
+            },
+            $or: [
+                {
+                    friend_id: new mongoose.Types.ObjectId(userId)
+                },
+                {
+                    user_id: new mongoose.Types.ObjectId(userId)
+                },
+            ]
+        }
+        r = this.usersFriendsModel.aggregate([
+            params,
+
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { user_friend: "$user_id", friend_user: "$friend_id" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $or:
+                                        [
+                                            { $eq: ["$_id", "$$user_friend"] },
+                                            { $eq: ["$_id", "$$friend_user"] },
+                                        ]
+                                }
+                            }
+                        },
+                    ],
+                    as: "user"
+                },
+            },
+            {
+                $addFields: {
+                    user: {
+                        $filter: {
+                            input: "$user",
+                            cond: {
+                                $ne: ["$$this._id", new mongoose.Types.ObjectId(userId)]
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "$addFields": {
+                    "user.password": {
+                        "$cond": [
+                            { "$eq": [true, true] },
+                            "$$REMOVE",
+                            0
+                        ]
+                    }
+                }
+            },
+            {
+                "$addFields": {
+                    "user": {
+                        "$cond": [
+                            {
+                                $or: [
+                                    { "$eq": [{ "$type": "$deleted_at" }, "missing"] },
+                                    { "$eq": [{ "$type": "$deleted_at" }, "null"] },
+                                ]
+                            },
+                            "$user",
+                            "$$REMOVE",
+                        ]
+                    },
+                }
+            },
+            { $sort: { _id: -1 } },
+            {
+                '$facet': {
+                    data: [{ $skip: (page - 1) * limit }, { $limit: limit },
+                    ],
+                    totalCount: [
+                        {
+                            $count: 'count'
+                        }
+                    ]
+
+                }
+            }
+        ])
+
+        const result = (await r.exec())[0]
+
+        return {
+            total: result?.totalCount[0]?.count,
+            data: result?.data
+        }
+    }
+
     getFriendNotificationTitle(status: UsersFriendEnum) {
         if (status === UsersFriendEnum.waiting) {
             return 'enviou uma solicitação de amizade.'
@@ -220,7 +339,6 @@ export class UsersFriendsService {
                                     [
                                         { $eq: ["$user_id", new mongoose.Types.ObjectId(user.id)] },
                                         { $eq: ["$friend_id", new mongoose.Types.ObjectId(dto.friend_id)] }
-
                                     ],
                             },
                             {

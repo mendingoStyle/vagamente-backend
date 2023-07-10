@@ -49,4 +49,13 @@ export class GetUserUseCase {
         return this.repository.find(dto)
     }
 
+    async findById(dto: GetUserSearch, token: string) {
+        let user = null;
+
+        if (token) {
+            user = await this.token.verifyToken(token.split('Bearer ')[1])
+        }
+
+        return this.repository.findById(dto, user?.id)
+    }
 }
