@@ -197,7 +197,7 @@ export class UsersFriendsService {
     }
 
     async findAll(dto: GetUsersFriends, user: IAccessToken) {
-        let { page, limit, ...query } = dto
+        let { page, limit, friend_id, ...query } = dto
         let r: any = null
         let params = null
         limit = 9999
