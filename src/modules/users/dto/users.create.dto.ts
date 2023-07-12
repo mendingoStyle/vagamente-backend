@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional } from "@nestjs/class-validator";
+import { FileValidator } from "@nestjs/common";
 
 export class CreateUser {
     name: string;
@@ -65,3 +66,5 @@ export class LoginInfoRegister {
     user_id: string
     created_at: Date
 }
+
+

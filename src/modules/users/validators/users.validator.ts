@@ -27,8 +27,33 @@ export class UsersValidator {
 
 
     }
-    async validateToEdit(dto: EditUser) {
+    isValid(file: Express.Multer.File): boolean | Promise<boolean> {
+        const in_mb = file.size / 1000000
+        return in_mb <= 10000000
+    }
+    
+    fileValidation(file: Express.Multer.File) {
+        const allowedExtensions = '^.*\.(jpg|JPG|gif|png|mp4|jpeg|JPEG|webp)$'
+        const regex = new RegExp(allowedExtensions);
+        return regex.test(file.originalname)
+    }
 
+    validateToEdit(dto: EditUser, file: Express.Multer.File, file_cape: Express.Multer.File) {
+        if (file) {
+            if (!this.isValid(file)) {
+                throw this.utils.throwErrorBadReqException("imagem muito grande")
+            }
+            if (!this.fileValidation(file))
+                throw this.utils.throwErrorBadReqException("imagem com tipo inválido")
+
+        }
+        if (file_cape) {
+            if (!this.isValid(file_cape)) {
+                throw this.utils.throwErrorBadReqException("imagem muito grande")
+            }
+            if (!this.fileValidation(file_cape))
+                throw this.utils.throwErrorBadReqException("imagem com tipo inválido")
+        }
     }
     async findAllValidate(dto: GetUser) {
     }

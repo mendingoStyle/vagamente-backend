@@ -3,6 +3,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Messages, MessagesSchema } from "database/schemas/messages.schema";
 import { MessagesController } from "./messages.controller";
 import { MessagesService } from "./messages.service";
+import { UsersFriendsModule } from "modules/usersFriends/usersFriends.module";
 
 
 @Module({
@@ -12,6 +13,7 @@ import { MessagesService } from "./messages.service";
     ],
     imports: [
         MongooseModule.forFeature([{ name: Messages.name, schema: MessagesSchema }]),
+        UsersFriendsModule
     ],
     exports: [MessagesService],
 })

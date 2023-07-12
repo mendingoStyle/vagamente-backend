@@ -5,12 +5,16 @@ import { UtilsService } from "modules/utils/utils.service";
 import mongoose, { Model } from "mongoose";
 import { GetMessages } from "./dto/messages.get.dto";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
+import { CreateMessagesDto } from "./dto/messages.create.dto";
+import { UsersFriendsService } from "modules/usersFriends/usersFriends.service";
+import { UsersFriendEnum } from "database/schemas/users_friends.schema";
 
 @Injectable()
 export class MessagesService {
     constructor(
         @InjectModel(Messages.name) private messagesModel: Model<MessagesDocument>,
-        private readonly utils: UtilsService
+        private readonly utils: UtilsService,
+        private readonly friendshipService: UsersFriendsService
     ) { }
 
     async findAll(dto: GetMessages, user: IAccessToken) {
@@ -53,5 +57,16 @@ export class MessagesService {
             total: result?.totalCount[0]?.count,
             data: result?.data
         }
+    }
+
+    async create(body: CreateMessagesDto, user: IAccessToken) {
+        const verifyFriendShip = await this.friendshipService.findOneById(body.user_friend_id)
+
+        if (verifyFriendShip.status !== UsersFriendEnum.accepted
+            || (verifyFriendShip.friend_id.toString() !== user.id
+                && verifyFriendShip.user_id.toString() !== user.id))
+            throw this.utils.throwForbiddenException('Amizade não encontrada')
+
+        return this.messagesModel.create({ ...body, from_user_id: user.id })
     }
 }

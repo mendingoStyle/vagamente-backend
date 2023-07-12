@@ -6,7 +6,6 @@ import { UsersFriends, UsersFriendsSchema } from 'database/schemas/users_friends
 import { UsersModule } from 'modules/users/users.module';
 import { SocketModule } from 'modules/socket/socket.module';
 
-
 @Module({
     controllers: [UsersFriendsController],
     providers: [

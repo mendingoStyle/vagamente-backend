@@ -12,6 +12,18 @@ export class Messages {
     })
     user_friend_id: mongoose.Schema.Types.ObjectId
 
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId,
+        ref: UsersFriends.name
+    })
+    from_user_id: mongoose.Schema.Types.ObjectId
+
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId,
+        ref: UsersFriends.name
+    })
+    to_user_id: mongoose.Schema.Types.ObjectId
+
     @Prop()
     message: string
 
@@ -26,6 +38,5 @@ export class Messages {
 
     @Prop()
     isRead?: boolean
-
 }
 export const MessagesSchema = SchemaFactory.createForClass(Messages);

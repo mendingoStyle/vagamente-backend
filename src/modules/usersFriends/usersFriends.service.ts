@@ -203,12 +203,7 @@ export class UsersFriendsService {
     }
 
     async findVerifyFriendShip(dto: GetUsersFriends, user: IAccessToken) {
-        const { page, limit, ...query } = dto
-        let r: any = null
-        let params = null
-
-        console.log(query)
-        r = this.usersFriendsModel.aggregate([
+        let r = this.usersFriendsModel.aggregate([
             {
                 $match:
                 {
@@ -290,6 +285,9 @@ export class UsersFriendsService {
         return {
             ...result
         }
+    }
+    async findOneById(id: string): Promise<UsersFriends> {
+        return this.usersFriendsModel.findById(id)
     }
 
 }

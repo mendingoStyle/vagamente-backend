@@ -1,10 +1,10 @@
 import { IsNotEmpty } from "class-validator";
-import { PaginationPayloadDto } from "modules/utils/dto/pagination.dto";
 
-export class GetMessages extends PaginationPayloadDto {
+export class CreateMessagesDto {
     @IsNotEmpty()
     user_friend_id: string
 
+    @IsNotEmpty()
     message: string
 
     created_at: Date;
@@ -17,5 +17,6 @@ export class GetMessages extends PaginationPayloadDto {
 
     from_user_id: string
 
+    @IsNotEmpty()
     to_user_id: string
 }

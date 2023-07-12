@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Patch, Post, Query, UploadedFile, Headers, UseGuards, UseInterceptors, UsePipes, ValidationPipe, ParseFilePipeBuilder, HttpStatus } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, Query, UploadedFile, Headers, UseGuards, UseInterceptors, UsePipes, ValidationPipe, ParseFilePipeBuilder, HttpStatus, UploadedFiles, ParseFilePipe } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUser, EditUser } from "./dto/users.create.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { LoggedUser } from "modules/utils/decorators/user.decorator";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 import { ForgetPasswordPayloadDto } from "modules/token/dto/forgetPassword.dto";
@@ -25,35 +25,21 @@ export class UsersController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'file', maxCount: 1 },
+        { name: 'file_cape', maxCount: 1 },
+    ]))
     @Patch()
     patch(
-        @UploadedFile(new ParseFilePipeBuilder()
-            .addFileTypeValidator({
-                fileType: '^.*\.(jpg|JPG|gif|png|mp4|jpeg|JPEG|webp)$',
-            })
-            .addMaxSizeValidator({
-                maxSize: 10000000
-            })
-            .build({
-                errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-                fileIsRequired: false
-            })) file: Express.Multer.File,
-        @UploadedFile(new ParseFilePipeBuilder()
-            .addFileTypeValidator({
-                fileType: '^.*\.(jpg|JPG|gif|png|mp4|jpeg|JPEG|webp)$',
-            })
-            .addMaxSizeValidator({
-                maxSize: 10000000
-            })
-            .build({
-                errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-                fileIsRequired: false
-            })) file_cape: Express.Multer.File,
+        @UploadedFiles() files: { file: Express.Multer.File[], file_cape: Express.Multer.File[] },
         @Body() dto: EditUser,
         @LoggedUser() user: IAccessToken,
     ) {
-        return this.service.patch(dto, file, user.id, file_cape)
+        return this.service.patch(dto,
+            files?.file?.length > 0 ? files?.file[0] : undefined,
+            user.id,
+            files?.file_cape?.length > 0 ? files?.file_cape[0] : undefined
+        )
     }
 
     @UsePipes(new ValidationPipe({ transform: true }))
