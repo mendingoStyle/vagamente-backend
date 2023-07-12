@@ -15,8 +15,8 @@ export class CreateMessagesDto {
 
     isRead?: boolean
 
+    to_user_id: string
+
     from_user_id: string
 
-    @IsNotEmpty()
-    to_user_id: string
 }

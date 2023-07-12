@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Messages, MessagesDocument } from "database/schemas/messages.schema";
 import { UtilsService } from "modules/utils/utils.service";
 import mongoose, { Model } from "mongoose";
-import { GetMessages } from "./dto/messages.get.dto";
+import { GetMessagesDto } from "./dto/messages.get.dto";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 import { CreateMessagesDto } from "./dto/messages.create.dto";
 import { UsersFriendsService } from "modules/usersFriends/usersFriends.service";
@@ -17,18 +17,14 @@ export class MessagesService {
         private readonly friendshipService: UsersFriendsService
     ) { }
 
-    async findAll(dto: GetMessages, user: IAccessToken) {
+    async findAll(dto: GetMessagesDto, user: IAccessToken) {
         const { page, limit, ...query } = dto
         let r: any = null
         const params = this.utils.applyFilterAggregate({ ...query, deleted_at: null })
 
         r = this.messagesModel.aggregate([
             params,
-            {
-                $match: {
-                    "usersfriends.user_id": new mongoose.Types.ObjectId(user.id)
-                }
-            },
+
             {
                 $lookup: {
                     from: 'usersfriends',
@@ -37,7 +33,11 @@ export class MessagesService {
                     as: 'friends',
                 },
             },
-
+            {
+                $match: {
+                    "friends.user_id": new mongoose.Types.ObjectId(user.id)
+                }
+            },
             { $sort: { _id: -1 } },
             {
                 '$facet': {
@@ -58,7 +58,6 @@ export class MessagesService {
             data: result?.data
         }
     }
-
     async create(body: CreateMessagesDto, user: IAccessToken) {
         const verifyFriendShip = await this.friendshipService.findOneById(body.user_friend_id)
 

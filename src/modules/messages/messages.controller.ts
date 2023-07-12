@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query, UseGuards, UsePipes, ValidationPipe
 import { MessagesService } from "./messages.service";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 import { LoggedUser } from "modules/utils/decorators/user.decorator";
-import { GetMessages } from "./dto/messages.get.dto";
+import { GetMessagesDto } from "./dto/messages.get.dto";
 import { JwtAuthGuard } from "modules/auth/guard/jwt-auth.guard";
 import { CreateMessagesDto } from "./dto/messages.create.dto";
 
@@ -15,12 +15,15 @@ export class MessagesController {
     ) { }
 
     @Get()
-    findAll(
-        @Query() dto: GetMessages,
+
+    find(
+        @Query() dto: GetMessagesDto,
         @LoggedUser() user: IAccessToken,
     ) {
         return this.service.findAll(dto, user)
     }
+
+
 
     @Post()
     create(

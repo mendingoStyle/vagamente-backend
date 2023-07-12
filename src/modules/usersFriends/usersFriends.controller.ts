@@ -32,6 +32,14 @@ export class UsersFriendsController {
     }
 
     @Get()
+    findAllRequests(
+        @Query() dto: GetUsersFriends,
+        @LoggedUser() user: IAccessToken,
+    ) {
+        return this.service.findAllRequests(dto, user)
+    }
+
+    @Get('find-friends')
     findAll(
         @Query() dto: GetUsersFriends,
         @LoggedUser() user: IAccessToken,

@@ -57,6 +57,10 @@ export class UsersService {
     async find(dto: GetUserSearch) {
         return this.useCaseGetUser.find(dto)
     }
+    
+    async findById(dto: GetUserSearch, token: string) {
+        return this.useCaseGetUser.findById(dto, token)
+    }
 
 
 }
