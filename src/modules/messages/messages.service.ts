@@ -34,8 +34,23 @@ export class MessagesService {
                 },
             },
             {
+                $lookup: {
+                    from: 'users',
+                    localField: 'from_user_id',
+                    foreignField: '_id',
+                    as: 'from_user',
+                },
+            },
+            {
                 $match: {
-                    "friends.user_id": new mongoose.Types.ObjectId(user.id)
+                    $or: [
+                        {
+                            "friends.friend_id": new mongoose.Types.ObjectId(user.id)
+                        },
+                        {
+                            "friends.user_id": new mongoose.Types.ObjectId(user.id)
+                        },
+                    ]
                 }
             },
             { $sort: { _id: -1 } },
@@ -66,6 +81,12 @@ export class MessagesService {
                 && verifyFriendShip.user_id.toString() !== user.id))
             throw this.utils.throwForbiddenException('Amizade não encontrada')
 
-        return this.messagesModel.create({ ...body, from_user_id: user.id })
+        return this.messagesModel.create({ 
+            ...body, 
+            from_user_id: user.id,
+            created_at: new Date(),
+            updated_at: new Date(),
+            isRead: false
+        })
     }
 }

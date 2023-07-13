@@ -15,15 +15,12 @@ export class MessagesController {
     ) { }
 
     @Get()
-
     find(
         @Query() dto: GetMessagesDto,
         @LoggedUser() user: IAccessToken,
     ) {
         return this.service.findAll(dto, user)
     }
-
-
 
     @Post()
     create(
@@ -32,5 +29,4 @@ export class MessagesController {
     ) {
         return this.service.create(body, user)
     }
-
 }
