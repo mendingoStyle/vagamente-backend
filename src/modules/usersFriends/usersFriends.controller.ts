@@ -52,7 +52,6 @@ export class UsersFriendsController {
         @Query() dto: GetUsersFriends,
         @LoggedUser() user: IAccessToken,
     ) {
-        console.log('check')
         return this.service.findVerifyFriendShip(dto, user)
     }
 

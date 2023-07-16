@@ -206,7 +206,7 @@ export class UsersFriendsService {
 
         if (!!dto.friend_id) {
             userId = dto.friend_id;
-        } 
+        }
 
         params = this.utils.applyFilterAggregate({
             ...query,
@@ -345,12 +345,9 @@ export class UsersFriendsService {
                                     ]
                             }
                         ],
-
-
                     }
                 }
             },
-
             {
                 $lookup: {
                     from: 'users',
@@ -366,6 +363,34 @@ export class UsersFriendsService {
                         },
                     ],
                     as: "user"
+                },
+            },
+            {
+                $lookup: {
+                    from: 'messages',
+                    let: { id_friendship: "_id" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    "$and": [
+                                        {
+                                            $ne: ["$from_user_id", new mongoose.Types.ObjectId(user.id)],
+                                        },
+                                        {
+                                            $eq: ["$_id", "$$id_friendship"],
+                                        },
+                                        {
+                                            $eq: ["$isRead", false],
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                    ],
+                    as: "messages"
                 },
             },
             {
