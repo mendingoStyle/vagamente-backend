@@ -4,6 +4,7 @@ import { Messages, MessagesSchema } from "database/schemas/messages.schema";
 import { MessagesController } from "./messages.controller";
 import { MessagesService } from "./messages.service";
 import { UsersFriendsModule } from "modules/usersFriends/usersFriends.module";
+import { SocketModule } from "modules/socket/socket.module";
 
 
 @Module({
@@ -13,7 +14,8 @@ import { UsersFriendsModule } from "modules/usersFriends/usersFriends.module";
     ],
     imports: [
         MongooseModule.forFeature([{ name: Messages.name, schema: MessagesSchema }]),
-        UsersFriendsModule
+        UsersFriendsModule,
+        SocketModule
     ],
     exports: [MessagesService],
 })

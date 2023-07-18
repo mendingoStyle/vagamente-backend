@@ -6,19 +6,22 @@ import mongoose from "mongoose";
 export class GetMessagesDto extends PaginationPayloadDto {
     @IsNotEmpty()
     @Transform(({ value }) => new mongoose.Types.ObjectId(value))
-    user_friend_id: string
+    user_friend_id?: string
 
-    message: string
+    message?: string
 
-    created_at: Date;
+    created_at?: Date;
 
-    updated_at: Date;
+    updated_at?: Date;
 
-    deleted_at: Date;
+    deleted_at?: Date;
 
     isRead?: boolean
-    to_user_id: string
 
-    from_user_id: string
+    to_user_id?: string
+
+    from_user_id?: string
+
+    _id?: string | any
 
 }

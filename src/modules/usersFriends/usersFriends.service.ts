@@ -253,7 +253,7 @@ export class UsersFriendsService {
             {
                 $lookup: {
                     from: 'messages',
-                    let: { id_friendship: "_id" },
+                    let: { id_friendship: "$_id" },
                     pipeline: [
                         {
                             $match:
@@ -265,7 +265,7 @@ export class UsersFriendsService {
                                             $ne: ["$from_user_id", new mongoose.Types.ObjectId(user.id)],
                                         },
                                         {
-                                            $eq: ["$_id", "$$id_friendship"],
+                                            $eq: ["$user_friend_id", "$$id_friendship"],
                                         },
                                         {
                                             $eq: ["$isRead", false],

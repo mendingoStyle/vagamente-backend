@@ -1,3 +1,4 @@
+import { Messages } from "database/schemas/messages.schema";
 import { NotificationsEnum } from "database/schemas/notifications.schema";
 import { Users } from "database/schemas/users.schema";
 import { ObjectId } from "mongoose";
@@ -23,4 +24,10 @@ export class SendNotificationsDto {
     user: Users
 
     type: NotificationsEnum
+}
+
+
+export class SendNotificationsMessageDto {
+    to_user_id: string | ObjectId
+    message: Messages
 }
