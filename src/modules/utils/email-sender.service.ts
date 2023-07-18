@@ -42,6 +42,7 @@ export class EmailSenderSevice {
       return transporter.sendMail(mailOptions,
         async function (error, info) {
           if (error) {
+            console.log(error)
             resolve(null);
           } else {
             resolve({ message: senderDto.messageAccept })

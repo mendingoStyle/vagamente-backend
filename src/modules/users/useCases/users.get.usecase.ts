@@ -51,7 +51,6 @@ export class GetUserUseCase {
 
     async findById(dto: GetUserSearch, token: string) {
         let user = null;
-
         if (token) {
             user = await this.token.verifyToken(token.split('Bearer ')[1])
         }

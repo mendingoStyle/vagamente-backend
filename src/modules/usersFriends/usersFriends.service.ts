@@ -9,6 +9,7 @@ import { UsersRepository } from "modules/users/users.repository";
 import { NotificationsEnum } from "database/schemas/notifications.schema";
 import { IAccessToken } from "modules/auth/interfaces/jwt.interface";
 import { SocketGateway } from "modules/socket/socket.gateway";
+import { TokenService } from "modules/token/tokenController.service";
 
 @Injectable()
 export class UsersFriendsService {
@@ -17,6 +18,7 @@ export class UsersFriendsService {
         private readonly utils: UtilsService,
         private userRepository: UsersRepository,
         private sockerGateway: SocketGateway,
+        private tokenController: TokenService
     ) { }
 
     async sendFriendRequest(body: CreateUsersFriends) {
@@ -196,13 +198,18 @@ export class UsersFriendsService {
         }
     }
 
-    async findAll(dto: GetUsersFriends, user: IAccessToken) {
+    async findAll(dto: GetUsersFriends, token: string) {
+        let user = null;
+        if (token) {
+            user = await this.tokenController.verifyToken(token.split('Bearer ')[1]);
+        }
+
         let { page, limit, friend_id, ...query } = dto
         let r: any = null
         let params = null
         limit = 9999
 
-        let userId = user.id;
+        let userId = user?.id;
 
         if (!!dto.friend_id) {
             userId = dto.friend_id;
@@ -262,7 +269,7 @@ export class UsersFriendsService {
                                 {
                                     "$and": [
                                         {
-                                            $ne: ["$from_user_id", new mongoose.Types.ObjectId(user.id)],
+                                            $ne: ["$from_user_id", new mongoose.Types.ObjectId(userId)],
                                         },
                                         {
                                             $eq: ["$user_friend_id", "$$id_friendship"],
