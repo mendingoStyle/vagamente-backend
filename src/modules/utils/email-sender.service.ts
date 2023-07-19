@@ -18,7 +18,7 @@ export class EmailSenderSevice {
     const transporter = createTransport({
       host: this.config.get('HOST_EMAIL'),
       port: parseInt(this.config.get('PORT_EMAIL')),
-      secure: false,
+      secure: true,
       auth: {
         user: this.config.get('EMAIL'),
         pass: this.config.get('PASSWORD_EMAIL')
