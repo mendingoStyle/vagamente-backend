@@ -15,14 +15,10 @@ export class EmailSenderSevice {
     senderDto: EmailSenderDto,
   ): Promise<{}> {
     const url = senderDto.url
-    console.log(this.config.get('HOST_EMAIL'),
-      parseInt(this.config.get('PORT_EMAIL')),
-      this.config.get('EMAIL'),
-      this.config.get('PASSWORD_EMAIL'))
     const transporter = createTransport({
       host: this.config.get('HOST_EMAIL'),
       port: parseInt(this.config.get('PORT_EMAIL')),
-      secure: true,
+      secure: false,
       auth: {
         user: this.config.get('EMAIL'),
         pass: this.config.get('PASSWORD_EMAIL')
