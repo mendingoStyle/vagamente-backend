@@ -57,6 +57,17 @@ export class MessagesService {
                     ]
                 }
             },
+            {
+                "$addFields": {
+                    "from_user.password": {
+                        "$cond": [
+                            { "$eq": [true, true] },
+                            "$$REMOVE",
+                            0
+                        ]
+                    }
+                }
+            },
             { $sort: { _id: -1 } },
             {
                 '$facet': {
