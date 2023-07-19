@@ -15,6 +15,10 @@ export class EmailSenderSevice {
     senderDto: EmailSenderDto,
   ): Promise<{}> {
     const url = senderDto.url
+    console.log(this.config.get('HOST_EMAIL'),
+      parseInt(this.config.get('PORT_EMAIL')),
+      this.config.get('EMAIL'),
+      this.config.get('PASSWORD_EMAIL'))
     const transporter = createTransport({
       host: this.config.get('HOST_EMAIL'),
       port: parseInt(this.config.get('PORT_EMAIL')),
@@ -50,7 +54,7 @@ export class EmailSenderSevice {
         }
       );
     })
-    if (await promise == null) this.utils.throwErrorBadReqException('Erro ao enviar o email');
+    if (await promise == null) throw this.utils.throwErrorBadReqException('Erro ao enviar o email');
     return promise
   }
 }
