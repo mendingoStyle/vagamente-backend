@@ -27,6 +27,9 @@ export class Complaints {
     commentary_id: mongoose.Schema.Types.ObjectId
 
     @Prop()
+    email: string
+
+    @Prop()
     created_at: Date;
 
     @Prop()

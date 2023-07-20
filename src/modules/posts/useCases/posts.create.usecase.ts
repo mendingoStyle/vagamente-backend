@@ -23,6 +23,7 @@ export class CreatePostUseCase {
     async create(post: CreatePost, file: Express.Multer.File, token?: string) {
         try {
             let img = null
+
             if (!post.content_resource) {
                 img = await this.uploadService.create(file)
             }
@@ -49,7 +50,15 @@ export class CreatePostUseCase {
                 } catch (e) {
                     console.log(e)
                 }
-            return this.repository.create(postWithTimeAndFile)
+            const postSaved = await this.repository.create(postWithTimeAndFile)
+            const titleFormated = postSaved.title.replace(/[^A-Za-z0-9]/g, "");
+            let slug = ''
+            if (titleFormated && titleFormated !== '') {
+                slug = `${titleFormated}-${postSaved._id.toString()}`
+            } else
+                slug = `${postSaved._id.toString()}`
+            await this.repository.editSlug(postSaved, slug)
+            return postSaved
         } catch (e) {
             console.log(e)
         }

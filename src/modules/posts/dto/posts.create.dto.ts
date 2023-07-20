@@ -18,4 +18,6 @@ export class CreatePost {
     tags: any
 
     isAnonymous: boolean
+
+    slug?: string
 }

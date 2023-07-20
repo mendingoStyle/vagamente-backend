@@ -9,8 +9,7 @@ export class ComplainsValidator {
         private readonly utils: UtilsService
     ) { }
     validateToSave(commentary: CreateComplaint) {
-        if (!commentary.post_id && !commentary.commentary_id)
-            throw this.utils.throwErrorBadReqException('Preencha o id do post ou da comentario')
+       
     }
     async findAllValidate(reaction) {
     }

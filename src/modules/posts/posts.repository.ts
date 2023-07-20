@@ -13,7 +13,7 @@ export class PostsRepository {
         @InjectModel(Posts.name) private postsModel: Model<PostsDocument>,
         private readonly utils: UtilsService
     ) { }
-    create(post: CreatePost) {
+    create(post: CreatePost) : Promise<Posts> {
         const postModel = new this.postsModel(post);
         return postModel.save();
     }
@@ -339,6 +339,13 @@ export class PostsRepository {
         return {
             message: 'ok'
         }
+    }
+
+    async editSlug(post: Posts, slug: string){
+        await this.postsModel.findOneAndUpdate(
+            { _id: post._id},
+            { slug: slug, updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
+            { upsert: true, new: false });
     }
 
     async findByid(id: ObjectId | string): Promise<Posts> {

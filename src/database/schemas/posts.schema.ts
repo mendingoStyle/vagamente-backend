@@ -44,6 +44,9 @@ export class Posts {
     @Prop()
     isAnonymous: boolean
 
+    @Prop()
+    slug: string
+
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

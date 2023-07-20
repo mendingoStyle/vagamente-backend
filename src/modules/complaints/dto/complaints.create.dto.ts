@@ -15,4 +15,6 @@ export class CreateComplaint {
     @IsNotEmpty()
     reason: string
 
+    email: string
+
 }
