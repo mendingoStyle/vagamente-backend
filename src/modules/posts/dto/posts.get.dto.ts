@@ -24,4 +24,6 @@ export class GetPost extends PaginationPayloadDto {
     deleted_at: Date
 
     slug: string
+
+    slugId: string
 }

@@ -13,12 +13,12 @@ export class PostsRepository {
         @InjectModel(Posts.name) private postsModel: Model<PostsDocument>,
         private readonly utils: UtilsService
     ) { }
-    create(post: CreatePost) : Promise<Posts> {
+    create(post: CreatePost): Promise<Posts> {
         const postModel = new this.postsModel(post);
         return postModel.save();
     }
     defaultGet(userId: string) {
-      
+
         return [
             {
                 $lookup: {
@@ -45,7 +45,7 @@ export class PostsRepository {
                     as: 'commentaries',
                 },
             },
-   
+
             {
                 $addFields: {
                     like: {
@@ -175,9 +175,18 @@ export class PostsRepository {
         ]
     }
     async findAll(dto: GetPost, userId: string): Promise<Posts[]> {
-        const { page, limit, ...query } = dto
+        const { page, limit, slugId, ...query } = dto
         let r: any = null
+        if (slugId) {
+            if (mongoose.Types.ObjectId.isValid(slugId)) {
+                query._id = new mongoose.Types.ObjectId(slugId)
+            } else {
+                query.slug = slugId
+            }
+        }
         let params = this.utils.applyFilterAggregate(query)
+        
+
         r = this.postsModel.aggregate([
             params,
             ...this.defaultGet(userId),
@@ -341,9 +350,9 @@ export class PostsRepository {
         }
     }
 
-    async editSlug(post: Posts, slug: string){
+    async editSlug(post: Posts, slug: string) {
         await this.postsModel.findOneAndUpdate(
-            { _id: post._id},
+            { _id: post._id },
             { slug: slug, updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
             { upsert: true, new: false });
     }
