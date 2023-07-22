@@ -35,7 +35,7 @@ export class UsersValidator {
     fileValidation(file: Express.Multer.File) {
         const allowedExtensions = '^.*\.(jpg|JPG|gif|png|mp4|jpeg|JPEG|webp)$'
         const regex = new RegExp(allowedExtensions);
-        return regex.test(file.originalname)
+        return regex.test(file.mimetype)
     }
 
     validateToEdit(dto: EditUser, file: Express.Multer.File, file_cape: Express.Multer.File) {
