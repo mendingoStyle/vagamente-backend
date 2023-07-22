@@ -65,12 +65,14 @@ export class UsersRepository {
         }
     }
     async patch(body: EditUser) {
-        await this.usersModel.findOneAndUpdate(
+        const user = await this.usersModel.findOneAndUpdate(
             { _id: body._id },
             { ...body, updated_at: new Date(this.utils.dateTimeZoneBrasil()) },
-            { upsert: true, new: false });
+            { upsert: true, new: true });
+        
         return {
-            message: 'Usuário Alterado!'
+            message: 'Usuário Alterado!',
+            file_cape: user.cape
         }
     }
 
@@ -234,7 +236,8 @@ export class UsersRepository {
             'username': 1,
             'avatar': 1,
             'biography': 1,
-            '_id': 1
+            '_id': 1,
+            'cape': 1
         });
 
         if (user) {
