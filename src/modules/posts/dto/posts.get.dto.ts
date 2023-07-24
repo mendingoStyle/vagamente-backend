@@ -26,4 +26,6 @@ export class GetPost extends PaginationPayloadDto {
     slug: string
 
     slugId: string
+
+    isAnonymous: boolean
 }

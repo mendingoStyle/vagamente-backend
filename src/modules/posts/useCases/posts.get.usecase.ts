@@ -19,6 +19,11 @@ export class GetPostUseCase {
                 const user = await this.tokenController.verifyToken(token.split('Bearer ')[1])
                 if (user) userId = user.id
             } catch (e) { }
+        
+        if (dto.user_id) {
+            dto.isAnonymous = false
+        }
+
         return this.repository.findAll({ ...dto, deleted_at: null }, userId)
     }
     async findHot(dto: GetPost, token: string) {
