@@ -10,6 +10,7 @@ import { UsersFriendsService } from "modules/usersFriends/usersFriends.service";
 import { UsersFriendEnum, UsersFriends } from "database/schemas/users_friends.schema";
 import { ReadAllMessagesDto } from "./dto/messages.patch.dto";
 import { SocketGateway } from "modules/socket/socket.gateway";
+import { UserKeysService } from "modules/userKeys/userKeys.service";
 
 @Injectable()
 export class MessagesService {
@@ -18,12 +19,12 @@ export class MessagesService {
         private readonly utils: UtilsService,
         private readonly friendshipService: UsersFriendsService,
         private sockerGateway: SocketGateway,
-
+        private readonly userKeysService: UserKeysService
     ) { }
 
     async findAll(dto: GetMessagesDto, user: IAccessToken) {
         const { page, limit, ...query } = dto
-        let r: any = null
+        let r: any = null, keys: any = []
         const params = this.utils.applyFilterAggregate({ ...query, deleted_at: null })
 
         r = this.messagesModel.aggregate([
@@ -83,14 +84,32 @@ export class MessagesService {
             }
         ])
         const result = (await r.exec())[0]
+        if (result?.data?.length > 0) {
+            keys = await this.userKeysService.getPrivateKeys(result.data[0].friends[0].friend_id, result.data[0].friends[0].user_id)
+        }
         return {
             total: result?.totalCount[0]?.count,
-            data: result?.data
+            data: result?.data.map(message => {
+                if (keys.length > 0) {
+                   
+                    const key = keys.filter(k => k.user_id.toString() !== message.from_user_id.toString())
+                    if (key.length > 0 && key[0]) {
+                        const decriptoMessage = this.userKeysService.decripyMessage(
+                            key[0].private_key,
+                            Buffer.from(message.message, "latin1")
+                        )
+                        return {
+                            ...message,
+                            message: this.userKeysService.encryptMessageAes(decriptoMessage)
+                        }
+                    }
+                }
+                return message
+            })
         }
     }
     async create(body: CreateMessagesDto, user: IAccessToken) {
         const friendship = await this.verifyFriendShip(body, user)
-
         const message = await this.messagesModel.create({
             ...body,
             from_user_id: user.id,
@@ -102,6 +121,7 @@ export class MessagesService {
         if (msg.data && msg.data.length > 0) {
             msg = msg.data[0]
         }
+
         this.sockerGateway.sendMessageNotifications({
             message: msg,
             to_user_id: friendship.user_id.toString() !== user.id ? friendship.user_id.toString() : friendship.friend_id.toString()

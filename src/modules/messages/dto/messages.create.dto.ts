@@ -5,7 +5,7 @@ export class CreateMessagesDto {
     user_friend_id: string
 
     @IsNotEmpty()
-    message: string
+    message: string | Buffer
 
     created_at: Date;
 

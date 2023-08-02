@@ -50,7 +50,7 @@ export class EmailSenderSevice {
         }
       );
     })
-    if (await promise == null) throw this.utils.throwErrorBadReqException('Erro ao enviar o email');
+    if (await promise === null) throw this.utils.throwErrorBadReqException('Erro ao enviar o email');
     return promise
   }
 }

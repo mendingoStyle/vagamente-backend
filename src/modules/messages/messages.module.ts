@@ -5,6 +5,7 @@ import { MessagesController } from "./messages.controller";
 import { MessagesService } from "./messages.service";
 import { UsersFriendsModule } from "modules/usersFriends/usersFriends.module";
 import { SocketModule } from "modules/socket/socket.module";
+import { UserKeysModule } from "modules/userKeys/userKeys.module";
 
 
 @Module({
@@ -15,7 +16,8 @@ import { SocketModule } from "modules/socket/socket.module";
     imports: [
         MongooseModule.forFeature([{ name: Messages.name, schema: MessagesSchema }]),
         UsersFriendsModule,
-        SocketModule
+        SocketModule,
+        UserKeysModule
     ],
     exports: [MessagesService],
 })
