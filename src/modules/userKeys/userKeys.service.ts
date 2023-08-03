@@ -22,7 +22,6 @@ export class UserKeysService {
                 public_key: verifyExistKeys.public_key
             }
         }
-        const passphrase = this.generatePassword()
         const promise: any = new Promise(async (resolve, reject) => {
             return generateKeyPair('rsa', {
                 modulusLength: 4096,
@@ -40,14 +39,6 @@ export class UserKeysService {
                 if (err) {
                     return resolve(null)
                 }
-                const buffer = crypto.randomBytes(16)
-                const testeDesincripted = 'isso eh um teste'
-                const encriptedTeste = this.encripyMessage(testeDesincripted, publicKey)
-               
-                
-                const passEncrypt = this.encryptPass(passphrase, buffer)
-
-
                 resolve(await this.userKeysUserKeysModel.create(
                     {
                         user_id,
