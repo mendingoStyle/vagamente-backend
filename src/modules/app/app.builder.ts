@@ -35,7 +35,7 @@ export async function appBuilder() {
   const app = await NestFactory.create(AppModule, appOptions)
   app.enableCors({
     origin: function (origin, callback) {
-      if (whitelist.indexOf(origin) !== -1 ) {
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
         callback(null, true)
       } else {
         console.log("blocked cors for:", origin)
